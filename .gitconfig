@@ -1,0 +1,73 @@
+[user]
+    email = mail@trmckay.com
+    name = Trevor McKay
+
+[color]
+    ui = true
+
+[core]
+    pager = delta
+
+[pull]
+    rebase = false
+
+[fetch]
+    recurseSubmodules = no
+
+[alias]
+    b = branch
+    bd = branch -D
+    c = commit
+    ca = commit --amend
+    co = checkout
+    cp = cherry-pick
+    cpa = cherry-pick --abort
+    cpc = cherry-pick --continue
+    d = diff
+    f = fetch
+    ll = log --pretty=format:'%C(red)%h%Creset -%C(yellow)%d%Creset %s %C(green)(%cr) %C(yellow)<%an>%Creset'
+    m = merge
+    ma = merge --abort
+    mc = merge --continue
+    p = push
+    pf = push --force-with-lease
+    rb = rebase
+    rba = rebase --abort
+    rbc = rebase --continue
+    rbi = rebase -i
+    root = rev-parse --show-toplevel
+    s = show
+
+[filter "lfs"]
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true
+
+[rerere]
+    enabled = true
+
+[diff]
+    ignoreSubmodules = all
+
+[init]
+    defaultBranch = main
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    features = side-by-side line-numbers decorations
+    whitespace-error-style = 22 reverse
+    light = false
+
+[delta "decorations"]
+    commit-decoration-style = bold yellow box ul
+    file-style = bold yellow ul
+    file-decoration-style = none
+
+[merge]
+    tool = fugitive
+
+[mergetool "fugitive"]
+    cmd = vmux -f -c \"Gvdiffsplit!\" \"$MERGED\"
