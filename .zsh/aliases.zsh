@@ -16,9 +16,12 @@ alias sudoe='sudo -E -H'
 alias tma='tmux a -t'
 alias tml='tmux ls'
 alias utop='htop -u'
-alias v='NVIM_NOWAIT=1 vmux'
-alias vi='NVIM_NOWAIT=1 vmux'
-alias vim='NVIM_NOWAIT=1 vmux'
+
+if command -v nvim 2>&1 > /dev/null; then
+    alias v='NVIM_NOWAIT=1 vmux'
+    alias vi='NVIM_NOWAIT=1 vmux'
+    alias vim='NVIM_NOWAIT=1 vmux'
+fi
 
 if command -v bat 2>&1 > /dev/null; then
     alias cat='bat --decorations=never --paging=never'
@@ -32,7 +35,6 @@ if command -v exa 2>&1 > /dev/null; then
     alias lla='exa -albFgUh --octal-permissions --time-style=long-iso'
     alias tree='exa --tree'
 else
-    unalias ls
     alias la='ls -a'
     alias ll='ls -lbFgUh'
     alias lla='ls -albFgUh'

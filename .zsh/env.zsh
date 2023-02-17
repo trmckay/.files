@@ -1,4 +1,8 @@
-export EDITOR="$HOME/.local/bin/vmux"
+if command -v nvim 2>&1 > /dev/null; then
+    export EDITOR="$HOME/.local/bin/vmux"
+else
+    export EDITOR="vim"
+fi
 
 if command -v delta 2>&1 > /dev/null; then
     export GIT_PAGER="delta"

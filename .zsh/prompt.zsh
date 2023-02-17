@@ -4,14 +4,18 @@ export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 export ZSH_LAST_EXIT=0
 
+function _hostname() {
+    hostname -s 2>/dev/null || hostnamectl hostname 2>/dev/null || echo "localhost"
+}
+
 precmd() {
     export ZSH_LAST_EXIT=$?
     echo
     vcs_info
     if [[ "$(pwd)" == "$HOME" ]]; then
-        print -Pn "\e]0;zsh - $(whoami)@$(hostname -s)\a"
+        print -Pn "\e]0;zsh - $(whoami)@$(_hostname)\a"
     else
-        print -Pn "\e]0;zsh - $(whoami)@$(hostname -s):$(basename "$(pwd)")\a"
+        print -Pn "\e]0;zsh - $(whoami)@$(_hostname):$(basename "$(pwd)")\a"
     fi
 }
 
