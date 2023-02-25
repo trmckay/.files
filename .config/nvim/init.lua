@@ -618,21 +618,21 @@ local function lsp_on_attach(client, bufnr)
   nmap("<C-c>", vim.lsp.buf.code_action, "LSP: code action", { buffer = bufnr })
   nmap(
     "gd",
-    vim.lsp.buf.definition,
+    require("telescope.builtin").lsp_definitions,
     "LSP: go to definition",
     { buffer = bufnr }
   )
   nmap(
     "gD",
-    vim.lsp.buf.type_definition,
+    require("telescope.builtin").lsp_type_definitions,
     "LSP: go to type definition",
     { buffer = bufnr }
   )
-  nmap("gr", vim.lsp.buf.references, "LSP: find references", { buffer = bufnr })
+  nmap("gr", require("telescope.builtin").lsp_references, "LSP: find references", { buffer = bufnr })
   nmap(
     "gI",
-    vim.lsp.buf.implementation,
-    "LSP: find references",
+    require("telescope.builtin").lsp_implementations,
+    "LSP: find implementations",
     { buffer = bufnr }
   )
 
