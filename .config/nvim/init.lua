@@ -807,7 +807,7 @@ vim.o.titlestring =
 vim.api.nvim_create_autocmd({ "VimEnter", "BufWinEnter" }, {
   group = init_augroup,
   callback = function()
-    if vim.bo.buftype == "" or vim.bo.filetype == "lir" then
+    if vim.tbl_contains({ "", "nowrite" }, vim.bo.buftype) or vim.bo.filetype == "lir" then
       vim.opt_local.winbar = "%!luaeval('WINBAR(vim.g.statusline_winid)')"
     end
   end,
