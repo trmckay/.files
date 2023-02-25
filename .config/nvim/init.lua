@@ -16,7 +16,7 @@ local plugins = {
   { "nvim-telescope/telescope.nvim" },
   { "nvim-telescope/telescope-ui-select.nvim" },
   { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
-  { "nvim-treesitter/nvim-treesitter", build = vim.cmd.TSUpdate },
+  { "nvim-treesitter/nvim-treesitter", build = function(_) vim.cmd.TSUpdate() end },
   { "nvim-treesitter/nvim-treesitter-context" },
   { "nvim-treesitter/playground" },
   { "rafamadriz/friendly-snippets" },
