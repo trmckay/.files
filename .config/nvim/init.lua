@@ -171,7 +171,7 @@ end
 
 local lsp_install_path = vim.fn.stdpath "data" .. "/lsp"
 
-local lsp_servers = { "sumneko_lua", "clangd", "pyright" }
+local lsp_servers = { "lua_ls", "clangd", "pyright" }
 if vim.env.NVIM_LSP_SERVERS then
   local requested_servers = vim.split(vim.env.NVIM_LSP_SERVERS, ",")
   lsp_servers = vim.tbl_filter(
