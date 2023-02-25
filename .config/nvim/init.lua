@@ -16,7 +16,10 @@ local plugins = {
   { "nvim-telescope/telescope.nvim" },
   { "nvim-telescope/telescope-ui-select.nvim" },
   { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
-  { "nvim-treesitter/nvim-treesitter", build = function(_) vim.cmd.TSUpdate() end },
+  {
+    "nvim-treesitter/nvim-treesitter",
+    build = function(_) vim.cmd.TSUpdate() end,
+  },
   { "nvim-treesitter/nvim-treesitter-context" },
   { "nvim-treesitter/playground" },
   { "rafamadriz/friendly-snippets" },
@@ -40,16 +43,16 @@ local plugins = {
   { "EdenEast/nightfox.nvim" },
 }
 
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
+  vim.fn.system {
     "git",
     "clone",
     "--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git",
     "--branch=stable",
     lazypath,
-  })
+  }
 end
 vim.opt.rtp:prepend(lazypath)
 
@@ -453,13 +456,29 @@ nmap(
 
 nmap(
   "[e",
-  with(vim.diagnostic.goto_prev, { { float = { border = border_style }, severity = vim.diagnostic.severity.ERROR } }),
+  with(
+    vim.diagnostic.goto_prev,
+    {
+      {
+        float = { border = border_style },
+        severity = vim.diagnostic.severity.ERROR,
+      },
+    }
+  ),
   "Next diagnostic"
 )
 
 nmap(
   "]e",
-  with(vim.diagnostic.goto_next, { { float = { border = border_style }, severity = vim.diagnostic.severity.ERROR } }),
+  with(
+    vim.diagnostic.goto_next,
+    {
+      {
+        float = { border = border_style },
+        severity = vim.diagnostic.severity.ERROR,
+      },
+    }
+  ),
   "Next diagnostic"
 )
 
@@ -548,7 +567,9 @@ vim.api.nvim_create_autocmd("TermOpen", {
 
 local function update_tmux_env()
   if not vim.env.TMUX then return end
-  for _, line in pairs(vim.split(vim.fn.system { "tmux", "show-environment" }, "\n")) do
+  for _, line in
+    pairs(vim.split(vim.fn.system { "tmux", "show-environment" }, "\n"))
+  do
     local _, _, k, v = line:find "(.*)=(.*)"
     if k and v then vim.env[k] = v end
   end
@@ -636,9 +657,9 @@ local function lsp_on_attach(client, bufnr)
   )
 
   vim.lsp.handlers["textDocument/hover"] =
-  vim.lsp.with(vim.lsp.handlers.hover, { border = border_style })
+    vim.lsp.with(vim.lsp.handlers.hover, { border = border_style })
   vim.lsp.handlers["textDocument/signatureHelp"] =
-  vim.lsp.with(vim.lsp.handlers.signature_help, { border = border_style })
+    vim.lsp.with(vim.lsp.handlers.signature_help, { border = border_style })
 
   local function fmt()
     vim.lsp.buf.format {
@@ -781,7 +802,7 @@ WINBAR = mkline({
 
 vim.o.statusline = "%!luaeval('STATUSLINE(vim.g.statusline_winid)')"
 vim.o.titlestring =
-string.format("nvim - %s@%s", vim.env.USER, command { "hostname", "-s" })
+  string.format("nvim - %s@%s", vim.env.USER, command { "hostname", "-s" })
 
 vim.api.nvim_create_autocmd({ "VimEnter", "BufWinEnter" }, {
   group = init_augroup,
@@ -872,10 +893,10 @@ require("cmp").setup {
   },
   enabled = function()
     return (vim.bo.buftype ~= "prompt" or require("cmp_dap").is_dap_buffer())
-        and not (
+      and not (
         require("cmp.config.context").in_treesitter_capture "comment"
-            and not require("cmp.config.context").in_syntax_group "Comment"
-        )
+        and not require("cmp.config.context").in_syntax_group "Comment"
+      )
   end,
   mapping = {
     ["<C-b>"] = require("cmp").mapping.scroll_docs(-4),
@@ -1262,48 +1283,48 @@ require("mason").setup {
 }
 
 local metals_config =
-vim.tbl_deep_extend("force", require("metals").bare_config(), {
-  on_attach = function(client, bufnr)
-    lsp_on_attach(client, bufnr)
-    require("metals").setup_dap()
-    nmap(
-      "<leader>ms",
-      "<cmd>MetalsGotoSuperMethod<cr>",
-      "Go to super-method",
-      { buffer = bufnr }
-    )
-    nmap(
-      "<leader>mS",
-      "<cmd>MetalsSuperMethodHierarchy<cr>",
-      "Super-method hierarchy",
-      { buffer = bufnr }
-    )
-    nmap(
-      "<leader>mb",
-      "<cmd>MetalsSwitchBsp<cr>",
-      "Switch BSP",
-      { buffer = bufnr }
-    )
-    nmap(
-      "<leader>mr",
-      "<cmd>MetalsRestartServer<cr>",
-      "Restart server",
-      { buffer = bufnr }
-    )
-    nmap(
-      "<leader>mc",
-      "<cmd>MetalsCompileCancel<cr>",
-      "Cancel compilation",
-      { buffer = bufnr }
-    )
-  end,
-  settings = {
-    superMethodLensesEnabled = false,
-  },
-  init_options = {
-    statusBarProvider = "on",
-  },
-})
+  vim.tbl_deep_extend("force", require("metals").bare_config(), {
+    on_attach = function(client, bufnr)
+      lsp_on_attach(client, bufnr)
+      require("metals").setup_dap()
+      nmap(
+        "<leader>ms",
+        "<cmd>MetalsGotoSuperMethod<cr>",
+        "Go to super-method",
+        { buffer = bufnr }
+      )
+      nmap(
+        "<leader>mS",
+        "<cmd>MetalsSuperMethodHierarchy<cr>",
+        "Super-method hierarchy",
+        { buffer = bufnr }
+      )
+      nmap(
+        "<leader>mb",
+        "<cmd>MetalsSwitchBsp<cr>",
+        "Switch BSP",
+        { buffer = bufnr }
+      )
+      nmap(
+        "<leader>mr",
+        "<cmd>MetalsRestartServer<cr>",
+        "Restart server",
+        { buffer = bufnr }
+      )
+      nmap(
+        "<leader>mc",
+        "<cmd>MetalsCompileCancel<cr>",
+        "Cancel compilation",
+        { buffer = bufnr }
+      )
+    end,
+    settings = {
+      superMethodLensesEnabled = false,
+    },
+    init_options = {
+      statusBarProvider = "on",
+    },
+  })
 
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "scala", "sbt", "java" },
@@ -1547,7 +1568,7 @@ nmap(
 
 local function ts_disable_large_buf(_, bufnr)
   return vim.api.nvim_buf_line_count(bufnr)
-      > tonumber(vim.env.NVIM_TREESITTER_MAX_SIZE or 100000)
+    > tonumber(vim.env.NVIM_TREESITTER_MAX_SIZE or 100000)
 end
 
 local ts_parsers = {
