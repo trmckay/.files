@@ -1,73 +1,76 @@
 local plugins = {
-  "hrsh7th/cmp-buffer",
-  "hrsh7th/cmp-nvim-lsp",
-  "hrsh7th/cmp-nvim-lua",
-  "hrsh7th/cmp-path",
-  "hrsh7th/nvim-cmp",
-  "kevinhwang91/nvim-ufo",
-  "kevinhwang91/promise-async",
-  "lewis6991/gitsigns.nvim",
-  "L3MON4D3/LuaSnip",
-  "mfussenegger/nvim-dap",
-  "mrjones2014/smart-splits.nvim",
-  "neovim/nvim-lspconfig",
-  "numToStr/Comment.nvim",
-  "nvim-lua/plenary.nvim",
-  "nvim-telescope/telescope.nvim",
-  "nvim-telescope/telescope-ui-select.nvim",
-  { "nvim-telescope/telescope-fzf-native.nvim", run = "make" },
-  { "nvim-treesitter/nvim-treesitter", run = vim.cmd.TSUpdate },
-  "nvim-treesitter/nvim-treesitter-context",
-  "nvim-treesitter/playground",
-  "rafamadriz/friendly-snippets",
-  "ray-x/lsp_signature.nvim",
-  "rcarriga/cmp-dap",
-  "romainl/vim-qf",
-  "ruifm/gitlinker.nvim",
-  "saadparwaiz1/cmp_luasnip",
-  "scalameta/nvim-metals",
-  "simrat39/rust-tools.nvim",
-  "tamago324/lir-git-status.nvim",
-  "tamago324/lir.nvim",
-  "tpope/vim-eunuch",
-  "tpope/vim-fugitive",
-  "tpope/vim-repeat",
-  "tpope/vim-rsi",
-  "tpope/vim-surround",
-  "trmckay/based.nvim",
-  "williamboman/mason.nvim",
-  "windwp/nvim-autopairs",
-  "EdenEast/nightfox.nvim",
+  { "hrsh7th/cmp-buffer" },
+  { "hrsh7th/cmp-nvim-lsp" },
+  { "hrsh7th/cmp-nvim-lua" },
+  { "hrsh7th/cmp-path" },
+  { "hrsh7th/nvim-cmp" },
+  { "kevinhwang91/nvim-ufo" },
+  { "kevinhwang91/promise-async" },
+  { "lewis6991/gitsigns.nvim" },
+  { "L3MON4D3/LuaSnip" },
+  { "mfussenegger/nvim-dap" },
+  { "mrjones2014/smart-splits.nvim" },
+  { "neovim/nvim-lspconfig" },
+  { "numToStr/Comment.nvim" },
+  { "nvim-lua/plenary.nvim" },
+  { "nvim-telescope/telescope.nvim" },
+  { "nvim-telescope/telescope-ui-select.nvim" },
+  { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+  { "nvim-treesitter/nvim-treesitter", build = vim.cmd.TSUpdate },
+  { "nvim-treesitter/nvim-treesitter-context" },
+  { "nvim-treesitter/playground" },
+  { "rafamadriz/friendly-snippets" },
+  { "ray-x/lsp_signature.nvim" },
+  { "rcarriga/cmp-dap" },
+  { "romainl/vim-qf" },
+  { "ruifm/gitlinker.nvim" },
+  { "saadparwaiz1/cmp_luasnip" },
+  { "scalameta/nvim-metals" },
+  { "simrat39/rust-tools.nvim" },
+  { "tamago324/lir-git-status.nvim" },
+  { "tamago324/lir.nvim" },
+  { "tpope/vim-eunuch" },
+  { "tpope/vim-fugitive" },
+  { "tpope/vim-repeat" },
+  { "tpope/vim-rsi" },
+  { "tpope/vim-surround" },
+  { "trmckay/based.nvim" },
+  { "williamboman/mason.nvim" },
+  { "windwp/nvim-autopairs" },
+  { "EdenEast/nightfox.nvim" },
 }
 
-local paq_path = vim.fn.stdpath "data" .. "/site/pack/paqs/start/paq-nvim"
-local paq_present = vim.fn.isdirectory(paq_path) > 0
-if vim.env.NVIM_BOOTSTRAP then
-  if not paq_present then
-    vim.fn.system {
-      "git",
-      "clone",
-      "--depth",
-      "1",
-      "https://github.com/savq/paq-nvim",
-      paq_path,
-    }
-  end
-  vim.cmd "packadd paq-nvim"
-  local paq = require "paq"
-  vim.api.nvim_create_autocmd("User", {
-    pattern = "PaqDoneInstall",
-    callback = function() vim.cmd "quit" end,
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable",
+    lazypath,
   })
-  paq(plugins)
-  paq.install()
-elseif not paq_present then
-  vim.notify("Bootstrapping plugins...", vim.log.levels.INFO)
-  vim.fn.system "env NVIM_BOOTSTRAP=1 nvim --headless"
-  vim.cmd "quit"
 end
+vim.opt.rtp:prepend(lazypath)
 
-require "paq" (plugins)
+require("lazy").setup(plugins, {
+  ui = {
+    icons = {
+      cmd = "⌘",
+      config = "🛠",
+      event = "📅",
+      ft = "📂",
+      init = "⚙",
+      keys = "🗝",
+      plugin = "🔌",
+      runtime = "💻",
+      source = "📄",
+      start = "🚀",
+      task = "📌",
+      lazy = "💤 ",
+    },
+  },
+})
 
 local function with(fn, args)
   return function() fn(unpack(args)) end
@@ -1532,6 +1535,7 @@ nmap(
   with(require("telescope.builtin").buffers, {
     {
       previewer = false,
+      ignore_current_buffer = true,
       attach_mappings = function(_, m)
         m("i", "<C-q>", require("telescope.actions").delete_buffer)
         return true
