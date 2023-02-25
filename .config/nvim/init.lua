@@ -689,7 +689,7 @@ local function mkline(sections, opts)
           list_flatmap(function(c)
             local s = c(e)
             if s then
-              return (opts.component_formatter or function(s) return s end)(s)
+              return (opts.component_formatter or function(i) return i end)(s)
             end
           end, section),
           opts.separator or "  "
@@ -697,7 +697,7 @@ local function mkline(sections, opts)
       end, sections),
       "%="
     )
-    return (opts.line_formatter or function(l) return l end)(l)
+    return (opts.line_formatter or function(i) return i end)(l)
   end
 end
 
@@ -762,7 +762,7 @@ local function component_filetype(winnr)
   if ft and ft ~= "" then return ft end
 end
 
-local function component_metals(winnr)
+local function component_metals(_)
   local status = vim.g["metals_status"]
   if status and status ~= "" then return status end
 end
