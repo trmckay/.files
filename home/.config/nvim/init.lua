@@ -227,6 +227,10 @@ local ft_overrides = {
     vim.opt_local.shiftwidth = 2
     vim.opt_local.softtabstop = 2
   end,
+  nix = function()
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.softtabstop = 2
+  end,
   text = function() vim.opt_local.wrap = true end,
   markdown = function() vim.opt_local.wrap = true end,
   fugitive = disable_text_edit_ui,

@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-# Find every regular file in the dotfile directory. For each file, remove
-# the corresponding file in $HOME if it exists, create any parent directories,
-# then symlink it.
+# rsync -a ./home/ ${HOME}/
+# but with symlinks
 
 set -euo pipefail
 IFS=$'\n'

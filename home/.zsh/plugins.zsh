@@ -1,6 +1,4 @@
-if command -v zoxide 2>&1 >/dev/null; then
-    eval "$(zoxide init zsh)"
-fi
+eval "$(zoxide init zsh)"
 
 ZSH_PLUGINS="$HOME/.zsh/plugins"
 
