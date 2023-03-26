@@ -1,8 +1,10 @@
+include /etc/sway/config.d/*
+
 set $mod Mod4
 
 set $term wezterm
 
-set $menu dmenu_path | dmenu | xargs swaymsg exec --
+set $menu bemenu-run
 
 bindsym $mod+Return exec $term
 bindsym $mod+q kill
@@ -51,10 +53,10 @@ bindsym $mod+Shift+9 move container to workspace number 9
 bindsym $mod+Shift+0 move container to workspace number 10
 
 mode "layout" {
-    bindsym s layout toggle split       ; mode "default"
+    bindsym e layout toggle split       ; mode "default"
     bindsym t layout tabbed             ; mode "default"
-    bindsym h splith                    ; mode "default"
-    bindsym v splitv                    ; mode "default"
+    bindsym v splith                    ; mode "default"
+    bindsym h splitv                    ; mode "default"
     bindsym f fullscreen                ; mode "default"
     bindsym Shift+f floating toggle     ; mode "default"
 
@@ -64,11 +66,13 @@ bindsym $mod+w mode "layout"
 
 bindsym $mod+Tab focus mode_toggle
 
-bindsym $mod+o focus parent
-bindsym $mod+i focus child
-
 bindsym $mod+Shift+Backspace move scratchpad
 bindsym $mod+Backspace scratchpad show
+
+bindsym $mod+c exec grim  -g "$(slurp)" /tmp/$(date +'%H:%M:%S.png')
+
+exec dbus-sway-environment
+exec configure-gtk
 
 mode "resize" {
     bindsym $left resize shrink width 10px
@@ -100,5 +104,3 @@ client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
 client.background       #ffffff
 
 output * bg #202020 solid_color
-
-include /etc/sway/config.d/*
