@@ -41,6 +41,7 @@ local plugins = {
   { "williamboman/mason.nvim" },
   { "windwp/nvim-autopairs" },
   { "EdenEast/nightfox.nvim" },
+  { "NvChad/nvim-colorizer.lua" }
 }
 
 local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
@@ -1708,6 +1709,13 @@ require("nvim-autopairs").setup {
   disable_in_macro = true,
   disable_in_visualblock = true,
 }
+
+require("colorizer").setup({
+    user_default_options = {
+      names = false,
+    },
+  }
+)
 
 vim.api.nvim_exec_autocmds("VimEnter", { group = init_augroup })
 _G.init_sourced = true
