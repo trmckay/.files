@@ -4,7 +4,7 @@ local function get_font_size()
   if wezterm.target_triple:find(".*-darwin$") then
     return 12
   else
-    return 10
+    return 8
   end
 end
 
