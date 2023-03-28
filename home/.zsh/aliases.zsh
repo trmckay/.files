@@ -17,9 +17,9 @@ alias tma='tmux a -t'
 alias tml='tmux ls'
 alias utop='htop -u'
 
-alias v='nvr -s'
-alias vi='nvr -s'
-alias vim='nvr -s'
+alias v='nvim'
+alias vi='nvim'
+alias vim='nvim'
 
 alias cat='bat --decorations=never --paging=never'
 alias less='bat --decorations=never --paging=always'
@@ -29,3 +29,9 @@ alias la='exa -a'
 alias ll='exa -lbFgUh --octal-permissions --time-style=long-iso'
 alias lla='exa -albFgUh --octal-permissions --time-style=long-iso'
 alias tree='exa --tree'
+
+function cd {
+   if ! builtin cd $@ 2>/dev/null; then
+       z $@
+   fi
+}

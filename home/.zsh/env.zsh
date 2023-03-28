@@ -1,4 +1,4 @@
-export EDITOR='nvr -s --remote-wait'
+export EDITOR='nvim'
 export GIT_PAGER="delta"
 export PAGER="bat --paging always --decorations never"
 

@@ -4,7 +4,7 @@ set $mod Mod4
 
 set $term wezterm
 
-set $menu bemenu-run
+set $menu bemenu-run -W 0.5
 
 bindsym $mod+Return exec $term
 bindsym $mod+q kill
@@ -13,7 +13,6 @@ bindsym $mod+Space exec $menu
 
 floating_modifier $mod normal
 bindsym $mod+Shift+r reload
-bindsym $mod+Shift+q exec swaynag -t warning -m 'Exit Sway?' -B 'Yes' 'swaymsg exit'
 
 set $left h
 set $down j
@@ -82,6 +81,33 @@ bindsym $mod+Shift+Backspace move scratchpad
 bindsym $mod+Backspace scratchpad show
 
 bindsym $mod+c exec grim  -g "$(slurp)" /tmp/$(date +'%H:%M:%S.png')
+
+for_window [window_role="pop-up"] floating enable
+for_window [window_role="task_dialog"] floating enable
+for_window [title="Picture-in-Picture"] floating enable
+for_window [title="Picture-in-Picture"] border none
+
+set $locker swaylock -c "#000000"
+
+exec swayidle -w \
+	timeout 1800 "$locker" \
+	timeout 1805 'swaymsg "output * power off"' \
+	resume 'swaymsg "output * power on"
+
+set $mode_system System (l) lock, (e) logout, (s) suspend, (h) hibernate, (r) reboot, (Shift+s) shutdown
+mode "$mode_system" {
+    bindsym l exec --no-startup-id $locker, mode "default"
+    bindsym e exec --no-startup-id swaymsg exit, mode "default"
+    bindsym s exec --no-startup-id $locker && systemctl suspend, mode "default"
+    bindsym h exec --no-startup-id $locker && systemctl hibernate, mode "default"
+    bindsym r exec --no-startup-id systemctl reboot, mode "default"
+    bindsym Shift+s exec --no-startup-id systemctl poweroff -i, mode "default"
+
+    bindsym Escape mode "default"
+}
+
+bindsym $mod+Shift+q mode "$mode_system"
+
 
 exec dbus-sway-environment
 exec configure-gtk
