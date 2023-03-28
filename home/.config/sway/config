@@ -135,11 +135,12 @@ bar {
     }
 }
 
-client.focused          #303030 #202020 #ffffff #202020   #404040
-client.focused_inactive #303030 #202020 #ffffff #303030   #202020
-client.unfocused        #303030 #202020 #606060 #303030   #202020
-client.urgent           #303030 #900000 #ffffff #900000   #900000
-client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
+#                       border     bg         text       indicator  border
+client.focused          #303030    #202020    #ffffff    #202020    #404040
+client.focused_inactive #303030    #202020    #808080    #303030    #202020
+client.unfocused        #303030    #202020    #606060    #303030    #202020
+client.urgent           #303030    #208090    #ffffff    #208090    #208090
+client.placeholder      #000000    #0c0c0c    #ffffff    #000000    #0c0c0c
 client.background       #ffffff
 
 output * bg #202020 solid_color
