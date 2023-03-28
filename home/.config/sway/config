@@ -6,6 +6,8 @@ set $term wezterm
 
 set $menu bemenu-run -W 0.5
 
+focus_follows_mouse no
+
 bindsym $mod+Return exec $term
 bindsym $mod+q kill
 
