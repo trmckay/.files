@@ -90,14 +90,12 @@ for_window [window_role="task_dialog"] floating enable
 for_window [title="Picture-in-Picture"] floating enable
 for_window [title="Picture-in-Picture"] border none
 
-exec swayidle -w \
-    timeout 1800 "$locker" \
-    timeout 1805 'swaymsg "output * power off"' \
-    before-sleep 'playerctl pause' \
-    before-sleep 'swaylock' \
-    resume 'swaymsg "output * power on"
-
 set $locker swaylock -c "#000000" & sleep 1
+
+exec swayidle -w \
+    timeout 600 '$locker' \
+    timeout 605 'swaymsg "output * dpms off"' \
+    resume 'swaymsg "output * dpms on"'
 
 set $mode_system System (l) lock, (e) logout, (s) suspend, (r) reboot, (Shift+s) shutdown
 mode "$mode_system" {
