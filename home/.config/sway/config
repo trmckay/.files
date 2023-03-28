@@ -51,11 +51,14 @@ bindsym $mod+Shift+8 move container to workspace number 8
 bindsym $mod+Shift+9 move container to workspace number 9
 bindsym $mod+Shift+0 move container to workspace number 10
 
+bindsym $mod+Control+l splith
+bindsym $mod+Control+h splith
+bindsym $mod+Control+j splitv
+bindsym $mod+Control+k splitv
+
 mode "Layout" {
     bindsym e layout toggle split       ; mode "default"
     bindsym t layout tabbed             ; mode "default"
-    bindsym v splith                    ; mode "default"
-    bindsym h splitv                    ; mode "default"
     bindsym f fullscreen                ; mode "default"
     bindsym Shift+f floating toggle     ; mode "default"
 
@@ -105,8 +108,7 @@ mode "$mode_system" {
     bindsym Escape mode "default"
 }
 
-bindsym $mod+Shift+q mode "$mode_system"
-
+bindsym $mod+Control+q mode "$mode_system"
 
 exec dbus-sway-environment
 exec configure-gtk
