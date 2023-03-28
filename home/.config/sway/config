@@ -127,7 +127,7 @@ bindsym $mod+r mode "Resize"
 
 bar {
     position top
-    status_command while date +'%Y-%m-%d %I:%M:%S %p'; do sleep 1; done
+    status_command while date +'%Y-%m-%d %H:%M:%S'; do sleep 1; done
     tray_padding 5
     colors {
         statusline #f0f0f0
@@ -137,9 +137,9 @@ bar {
     }
 }
 
-client.focused          #303030 #202020 #ffffff #202020   #303030
-client.focused_inactive #404040 #303030 #ffffff #303030   #404040
-client.unfocused        #404040 #303030 #c0c0c0 #303030   #404040
+client.focused          #303030 #202020 #ffffff #202020   #404040
+client.focused_inactive #303030 #202020 #ffffff #303030   #202020
+client.unfocused        #303030 #202020 #606060 #303030   #202020
 client.urgent           #303030 #900000 #ffffff #900000   #900000
 client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
 client.background       #ffffff
