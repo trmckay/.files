@@ -117,7 +117,8 @@ bindsym $mod+Control+q mode "$mode_system"
 exec dbus-sway-environment
 exec configure-gtk
 
-mode "Resize" {
+set $mod_resize Resize
+mode "$mode_resize" {
     bindsym $left resize shrink width 10px
     bindsym $down resize grow height 10px
     bindsym $up resize shrink height 10px
@@ -125,7 +126,7 @@ mode "Resize" {
 
     bindsym Escape mode "default"
 }
-bindsym $mod+r mode "Resize"
+bindsym $mod+r mode "$mode_resize"
 
 bar {
     position top
