@@ -17,4 +17,5 @@ return {
   native_macos_fullscreen_mode = true,
   audible_bell = "Disabled",
   freetype_load_target = "Light",
+  enable_wayland = false,
 }
