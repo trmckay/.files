@@ -134,7 +134,7 @@ bar {
     tray_padding 5
     colors {
         statusline #f0f0f0
-        background #202020
+        background #101010
         focused_workspace #606060 #404040 #ffffff
         inactive_workspace #404040 #202020 #c0c0c0
     }
