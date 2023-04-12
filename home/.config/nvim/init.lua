@@ -247,8 +247,7 @@ for ft, cfg in pairs(ft_overrides) do
   })
 end
 
-nmap("<leader>Ps", "<cmd>PaqSync<cr>", "Sync plugins")
-nmap("<leader>Pi", "<cmd>PaqInstall<cr>", "Install missing plugins")
+nmap("<leader>L", vim.cmd.Lazy, "Manage plugins")
 
 vim.cmd.colorscheme "terafox"
 
