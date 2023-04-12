@@ -7,6 +7,8 @@ source $ZDOTDIR/prompt.zsh
 source $ZDOTDIR/plugins.zsh
 source $ZDOTDIR/keybindings.zsh
 
-if [[ -f "$ZDOTDIR/local_rc.zsh" ]]; then
-    source $ZDOTDIR/local_rc.zsh
+local_rc="$ZDOTDIR/local_rc.zsh"
+
+if [[ -f "$local_rc" ]]; then
+    source "$local_rc"
 fi

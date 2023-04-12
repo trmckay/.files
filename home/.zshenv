@@ -1,5 +1,7 @@
 ZDOTDIR="$HOME/.zsh"
 
-if [[ -f "$ZDOTDIR/local_env.zsh" ]]; then
-    source $ZDOTDIR/local_env.zsh
+local_env="$ZDOTDIR/local_env.zsh"
+
+if [[ -f "$local_env" ]]; then
+    source "$local_env"
 fi
