@@ -40,8 +40,9 @@ local plugins = {
   { "trmckay/based.nvim" },
   { "williamboman/mason.nvim" },
   { "windwp/nvim-autopairs" },
-  { "EdenEast/nightfox.nvim" },
-  { "NvChad/nvim-colorizer.lua" }
+  { "ellisonleao/gruvbox.nvim" },
+  { "NvChad/nvim-colorizer.lua" },
+  { "f-person/auto-dark-mode.nvim" },
 }
 
 local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
@@ -249,15 +250,55 @@ end
 
 nmap("<leader>L", vim.cmd.Lazy, "Manage plugins")
 
-vim.cmd.colorscheme "terafox"
+require("gruvbox").setup({
+  italic = {
+    strings = false,
+  },
+  contrast = "hard",
+})
 
-vim.api.nvim_set_hl(0, "CursorLineNr", { link = "LineNr" })
-vim.api.nvim_set_hl(0, "MatchParen", { link = "DiffDelete" })
-vim.api.nvim_set_hl(0, "MsgArea", { link = "Comment" })
-vim.api.nvim_set_hl(0, "TreesitterContext", { link = "Normal" })
-vim.api.nvim_set_hl(0, "WinBar", { link = "StatusLine" })
-vim.api.nvim_set_hl(0, "WinBarNC", { link = "StatusLineNC" })
-vim.api.nvim_set_hl(0, "WinSeparator", { link = "LineNr" })
+vim.cmd("colorscheme gruvbox")
+
+local function colorscheme(scheme)
+  vim.cmd.colorscheme(scheme)
+  vim.api.nvim_set_hl(0, "CursorLineNr", { link = "LineNr" })
+  vim.api.nvim_set_hl(0, "MatchParen", { link = "DiffDelete" })
+  vim.api.nvim_set_hl(0, "MsgArea", { link = "Comment" })
+  vim.api.nvim_set_hl(0, "TreesitterContext", { link = "Normal" })
+  vim.api.nvim_set_hl(0, "WinBar", { link = "StatusLine" })
+  vim.api.nvim_set_hl(0, "WinBarNC", { link = "StatusLineNC" })
+  vim.api.nvim_set_hl(0, "WinSeparator", { link = "LineNr" })
+end
+
+vim.api.nvim_create_user_command(
+  "Colorscheme",
+  function(opts) colorscheme(opts.fargs[1]) end,
+  {
+    nargs = 1,
+    complete = "color",
+  }
+)
+
+local dark_colorscheme = "gruvbox"
+local light_colorscheme = "gruvbox"
+
+if vim.fn.has("macunix") == 1 then
+  local auto_dark_mode = require('auto-dark-mode')
+  auto_dark_mode.setup({
+    update_interval = 1000,
+    set_dark_mode = function()
+      vim.api.nvim_set_option('background', 'dark')
+      colorscheme(dark_colorscheme)
+    end,
+    set_light_mode = function()
+      vim.api.nvim_set_option('background', 'light')
+      colorscheme(light_colorscheme)
+    end,
+  })
+  auto_dark_mode.init()
+else
+  colorscheme(dark_colorscheme)
+end
 
 nmap("<esc>", "<cmd>noh|lclose|cclose<cr>")
 map({ "n", "v" }, "H", "0")
