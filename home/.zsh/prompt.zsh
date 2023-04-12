@@ -4,10 +4,6 @@ export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 export ZSH_LAST_EXIT=0
 
-function _hostname() {
-    hostname -s 2>/dev/null || hostnamectl hostname 2>/dev/null || echo "localhost"
-}
-
 precmd() {
     export ZSH_LAST_EXIT=$?
     echo
@@ -26,6 +22,10 @@ set -o promptsubst
 
 NL=$'\n'
 
+function _hostname() {
+    hostname -s 2>/dev/null || hostnamectl hostname 2>/dev/null || echo "localhost"
+}
+
 function _pwd {
     if [[ "$PWD" == "$HOME" ]]; then
         echo "~"
@@ -35,7 +35,13 @@ function _pwd {
 }
 
 function _exit_code {
-    echo "%(?..%F{magenta}\$? == $ZSH_LAST_EXIT%f )"
+    echo "%(?..[%F{magenta}$ZSH_LAST_EXIT%f] )"
 }
 
-prompt='[%F{cyan}%n@%m%f:%F{blue}$(_pwd)%f] $vcs_info_msg_0_$(_exit_code)${NL}%# '
+function _ssh {
+    if [[ ! -z $SSH_CLIENT ]]; then
+        echo "[%F{green}ssh: $(echo $SSH_CLIENT | cut -d' ' -f 1)%f]"
+    fi
+}
+
+prompt='[%F{cyan}%n@%m%f:%F{blue}$(_pwd)%f] $vcs_info_msg_0_$(_ssh)$(_exit_code)${NL}%# '
