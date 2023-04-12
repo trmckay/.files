@@ -5,5 +5,5 @@ function source_if_exists {
 }
 
 function command_exists {
-    command -v $1 2>&1 >/dev/null
+    type $1 2>&1 >/dev/null
 }
