@@ -1625,7 +1625,7 @@ local ts_parsers = {
   "git_rebase",
   "gitattributes",
   "gitcommit",
-  "help",
+  "vimdoc",
   "html",
   "java",
   "javascript",
