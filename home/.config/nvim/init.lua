@@ -535,7 +535,7 @@ nmap(
 )
 
 vim.diagnostic.config {
-  underline = false,
+  underline = true,
   virtual_text = false,
   severity_sort = true,
 }
