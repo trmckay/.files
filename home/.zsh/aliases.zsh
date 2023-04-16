@@ -51,7 +51,7 @@ if command_exists exa; then
     alias tree='exa --tree'
 fi
 
-if command_exists z; then
+if command_exists zoxide; then
     function cd {
        if ! builtin cd $@ 2>/dev/null; then
            z $@
