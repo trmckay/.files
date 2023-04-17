@@ -1,4 +1,8 @@
-eval "$(zoxide init zsh)"
+source "$ZDOTDIR/lib.zsh"
+
+if command_exists zoxide; then
+    eval "$(zoxide init zsh)"
+fi
 
 ZSH_PLUGINS="$HOME/.zsh/plugins"
 
