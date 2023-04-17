@@ -1,4 +1,5 @@
-source $ZDOTDIR/env.zsh
+source $ZDOTDIR/defaults.zsh
+source $ZDOTDIR/preexec.zsh
 source $ZDOTDIR/aliases.zsh
 source $ZDOTDIR/history.zsh
 source $ZDOTDIR/completion.zsh
@@ -7,8 +8,8 @@ source $ZDOTDIR/prompt.zsh
 source $ZDOTDIR/plugins.zsh
 source $ZDOTDIR/keybindings.zsh
 
-local_rc="$ZDOTDIR/local_rc.zsh"
+localrc="$ZDOTDIR/zshrc-local.zsh"
 
-if [[ -f "$local_rc" ]]; then
-    source "$local_rc"
+if [[ -f "$localrc" ]]; then
+    source "$localrc"
 fi
