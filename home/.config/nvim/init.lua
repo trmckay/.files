@@ -258,9 +258,7 @@ require("gruvbox").setup({
   contrast = "hard",
 })
 
-vim.cmd.colorscheme "gruvbox"
-
-vim.api.nvim_create_user_command("ColorScheme", {
+vim.api.nvim_create_autocmd("ColorScheme", {
   group = init_augroup,
   callback = function()
     vim.api.nvim_set_hl(0, "CursorLineNr", { link = "LineNr" })
@@ -282,16 +280,16 @@ if vim.fn.has("macunix") == 1 then
     update_interval = 1000,
     set_dark_mode = function()
       vim.api.nvim_set_option('background', 'dark')
-      colorscheme(dark_colorscheme)
+      vim.cmd.colorscheme(dark_colorscheme)
     end,
     set_light_mode = function()
       vim.api.nvim_set_option('background', 'light')
-      colorscheme(light_colorscheme)
+      vim.cmd.colorscheme(light_colorscheme)
     end,
   })
   auto_dark_mode.init()
 else
-  colorscheme(dark_colorscheme)
+  vim.cmd.colorscheme(dark_colorscheme)
 end
 
 nmap("<esc>", "<cmd>noh|lclose|cclose<cr>")
