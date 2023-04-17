@@ -1,11 +1,11 @@
 export ZSH_LAST_EXIT=0
 function _component_exit_code {
-    echo "%(?..[%F{magenta}$ZSH_LAST_EXIT%f] )"
+    echo "%(?..(%F{magenta}$ZSH_LAST_EXIT%f%) )"
 }
 
 function _component_ssh {
     if [[ ! -z $SSH_CLIENT ]]; then
-        echo "[%F{green}ssh: $(echo $SSH_CLIENT | cut -d' ' -f 1)%f] "
+        echo "%F{white}(ssh)%f "
     fi
 }
 
@@ -17,18 +17,18 @@ function _component_machine {
             echo "${PWD#"$HOME"/}"
         fi
     }
-    echo "[%F{cyan}%n@%m%f:%F{blue}$(_pwd)%f] "
+    echo "%F{cyan}%n%f@%F{cyan}%m%f:%F{blue}$(_pwd)%f "
 }
 
 autoload -Uz vcs_info
-zstyle ':vcs_info:*' formats '[%F{red}%b%f] '
-zstyle ':vcs_info:*' actionformats '[%F{red}%b %a%f] '
+zstyle ':vcs_info:*' formats '%F{white}(%F{red}%b%f%F{white})%f '
+zstyle ':vcs_info:*' actionformats '%F{white}(%F{red}%b %a%f%F{white})%f '
 function _component_vcs {
     echo "$vcs_info_msg_0_"
 }
 
 function _component_symbol {
-    echo "\n%# "
+    echo "%# "
 }
 
 precmd() {
@@ -43,8 +43,8 @@ set -o promptsubst
 
 prompt='''\
 $(_component_machine)\
+$(_component_vcs)
 $(_component_ssh)\
-$(_component_vcs)\
 $(_component_exit_code)\
 $(_component_symbol)\
 '''
