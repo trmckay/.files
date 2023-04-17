@@ -254,30 +254,24 @@ require("gruvbox").setup({
   italic = {
     strings = false,
   },
+  inverse = false,
   contrast = "hard",
 })
 
-vim.cmd("colorscheme gruvbox")
+vim.cmd.colorscheme "gruvbox"
 
-local function colorscheme(scheme)
-  vim.cmd.colorscheme(scheme)
-  vim.api.nvim_set_hl(0, "CursorLineNr", { link = "LineNr" })
-  vim.api.nvim_set_hl(0, "MatchParen", { link = "DiffDelete" })
-  vim.api.nvim_set_hl(0, "MsgArea", { link = "Comment" })
-  vim.api.nvim_set_hl(0, "TreesitterContext", { link = "Normal" })
-  vim.api.nvim_set_hl(0, "WinBar", { link = "StatusLine" })
-  vim.api.nvim_set_hl(0, "WinBarNC", { link = "StatusLineNC" })
-  vim.api.nvim_set_hl(0, "WinSeparator", { link = "LineNr" })
-end
-
-vim.api.nvim_create_user_command(
-  "Colorscheme",
-  function(opts) colorscheme(opts.fargs[1]) end,
-  {
-    nargs = 1,
-    complete = "color",
-  }
-)
+vim.api.nvim_create_user_command("ColorScheme", {
+  group = init_augroup,
+  callback = function()
+    vim.api.nvim_set_hl(0, "CursorLineNr", { link = "LineNr" })
+    vim.api.nvim_set_hl(0, "MatchParen", { link = "DiffDelete" })
+    vim.api.nvim_set_hl(0, "MsgArea", { link = "Comment" })
+    vim.api.nvim_set_hl(0, "TreesitterContext", { link = "Normal" })
+    vim.api.nvim_set_hl(0, "WinBar", { link = "StatusLine" })
+    vim.api.nvim_set_hl(0, "WinBarNC", { link = "StatusLineNC" })
+    vim.api.nvim_set_hl(0, "WinSeparator", { link = "LineNr" })
+  end
+})
 
 local dark_colorscheme = "gruvbox"
 local light_colorscheme = "gruvbox"
