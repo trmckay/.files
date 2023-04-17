@@ -316,21 +316,10 @@ nmap("gg", "ggzz")
 nmap("G", "Gzz")
 nmap("<leader>r", [[:%s/<C-r><C-w>/<C-r><C-w>/g<Left><Left>]])
 
-nmap("<leader>Cs", "<cmd>source<cr>", "Source current file")
 nmap(
   "<leader>Co",
-  string.format(
-    "<cmd>tabedit %s<cr>",
-    physical_path(vim.fn.stdpath "config" .. "/init.lua")
-  ),
+  function() vim.cmd.edit(physical_path(vim.fn.stdpath "config" .. "/init.lua")) end,
   "Edit init.lua"
-)
-vim.api.nvim_create_user_command(
-  "ReSo",
-  function()
-    vim.cmd(string.format("source %s", vim.fn.stdpath "config" .. "/init.lua"))
-  end,
-  { nargs = 0 }
 )
 
 nmap("<leader>ww", "<cmd>silent write<cr>", "Write buffer")
