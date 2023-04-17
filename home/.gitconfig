@@ -70,4 +70,4 @@
     tool = fugitive
 
 [mergetool "fugitive"]
-    cmd = vmux -f -c \"Gvdiffsplit!\" \"$MERGED\"
+    cmd = nvim -f -c \"Gvdiffsplit!\" \"$MERGED\"
