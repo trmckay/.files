@@ -256,19 +256,17 @@ require("gruvbox").setup({
   },
   inverse = false,
   contrast = "hard",
-})
-
-vim.api.nvim_create_autocmd("ColorScheme", {
-  group = init_augroup,
-  callback = function()
-    vim.api.nvim_set_hl(0, "CursorLineNr", { link = "LineNr" })
-    vim.api.nvim_set_hl(0, "MatchParen", { link = "DiffDelete" })
-    vim.api.nvim_set_hl(0, "MsgArea", { link = "Comment" })
-    vim.api.nvim_set_hl(0, "TreesitterContext", { link = "Normal" })
-    vim.api.nvim_set_hl(0, "WinBar", { link = "StatusLine" })
-    vim.api.nvim_set_hl(0, "WinBarNC", { link = "StatusLineNC" })
-    vim.api.nvim_set_hl(0, "WinSeparator", { link = "LineNr" })
-  end
+  overrides = {
+    CursorLineNr = { link = "LineNr" },
+    SignColumn = { link = "Normal" },
+    GruvboxGreenSign = { bg = "" },
+    GruvboxOrangeSign = { bg = "" },
+    GruvboxPurpleSign = { bg = "" },
+    GruvboxYellowSign = { bg = "" },
+    GruvboxRedSign = { bg = "" },
+    GruvboxBlueSign = { bg = "" },
+    GruvboxAquaSign = { bg = "" },
+  },
 })
 
 local dark_colorscheme = "gruvbox"
