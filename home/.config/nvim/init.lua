@@ -254,7 +254,6 @@ require("gruvbox").setup({
   italic = {
     strings = false,
   },
-  inverse = false,
   contrast = "hard",
   overrides = {
     CursorLineNr = { link = "LineNr" },
@@ -316,6 +315,21 @@ nmap("<leader>ww", "<cmd>silent write<cr>", "Write buffer")
 nmap("<leader>wq", "<cmd>wq<cr>", "Write buffer and close")
 nmap("<leader>wW", "<cmd>write!<cr>", "Force write buffer")
 nmap("<leader>wa", "<cmd>wall<cr>", "Write all buffers")
+
+nmap(
+  "<leader>ob",
+  function()
+    local colorscheme = vim.g.colors_name
+    local background = vim.opt.background:get()
+    if background == "light" then
+      vim.o.background = "dark"
+    else
+      vim.o.background = "light"
+    end
+    vim.cmd.colorscheme(colorscheme)
+  end,
+  "Toggle background"
+)
 
 nmap(
   "<leader>ow",
