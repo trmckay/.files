@@ -234,6 +234,7 @@ require("gruvbox").setup({
     GruvboxRedSign = { bg = "" },
     GruvboxBlueSign = { bg = "" },
     GruvboxAquaSign = { bg = "" },
+    MsgArea = { link = "LineNr" },
   },
 })
 
