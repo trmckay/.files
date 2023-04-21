@@ -35,7 +35,6 @@ local plugins = {
   { "williamboman/mason.nvim" },
   { "windwp/nvim-autopairs" },
   { "ellisonleao/gruvbox.nvim" },
-  { "f-person/auto-dark-mode.nvim" },
 }
 
 local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
@@ -238,26 +237,7 @@ require("gruvbox").setup({
   },
 })
 
-local dark_colorscheme = "gruvbox"
-local light_colorscheme = "gruvbox"
-
-if vim.fn.has("macunix") == 1 then
-  local auto_dark_mode = require('auto-dark-mode')
-  auto_dark_mode.setup({
-    update_interval = 1000,
-    set_dark_mode = function()
-      vim.api.nvim_set_option('background', 'dark')
-      vim.cmd.colorscheme(dark_colorscheme)
-    end,
-    set_light_mode = function()
-      vim.api.nvim_set_option('background', 'light')
-      vim.cmd.colorscheme(light_colorscheme)
-    end,
-  })
-  auto_dark_mode.init()
-else
-  vim.cmd.colorscheme(dark_colorscheme)
-end
+vim.cmd.colorscheme "gruvbox"
 
 nmap("<esc>", "<cmd>noh|lclose|cclose<cr>")
 map({ "n", "v" }, "H", "0")
