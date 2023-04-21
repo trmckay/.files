@@ -20,9 +20,17 @@ if command_exists sudo; then
 fi
 
 if command_exists tmux; then
-    alias tmn='tmux new-session -s'
-    alias tma='tmux attach-session -t'
+    function tmn {
+        tmux new-session -A -s "${1:-$(basename $(pwd))}"
+    }
     alias tml='tmux ls'
+    if command_exists fzf; then
+        function tma {
+            tmux attach-session -t "${1:-$(tmux ls | fzf | cut -d':' -f1)}"
+        }
+    else
+        alias tma='tmux attach-session -t'
+    fi
 fi
 
 if command_exists htop; then
