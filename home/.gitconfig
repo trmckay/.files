@@ -37,6 +37,7 @@
     rbi = rebase -i
     root = rev-parse --show-toplevel
     s = show
+    reset-last-head = reset HEAD@{1}
 
 [filter "lfs"]
     clean = git-lfs clean -- %f
