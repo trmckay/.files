@@ -284,12 +284,14 @@ nmap("<leader>ov", function()
   end
 end, "Toggle virtual editing")
 
-for w in { "", "w", "Q" } do
-  for q in { "", "q", "Q" } do
-    for a in { "", "a", "A" } do
-      for bang in { "", "!" } do
-        local cmd = w + q + a + bang
-        vim.cmd.cnoreabbrev(cmd, cmd:lower())
+for _, w in ipairs({ "", "w", "Q" }) do
+  for _, q in ipairs({ "", "q", "Q" }) do
+    for _, a in ipairs({ "", "a", "A" }) do
+      for _, bang in ipairs({ "", "!" }) do
+        local cmd = w .. q .. a .. bang
+        if cmd ~= "" then
+          vim.cmd.cnoreabbrev(cmd, cmd:lower())
+        end
       end
     end
   end
