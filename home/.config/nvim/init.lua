@@ -8,7 +8,6 @@ local plugins = {
   { "kevinhwang91/promise-async" },
   { "lewis6991/gitsigns.nvim" },
   { "L3MON4D3/LuaSnip" },
-  { "mfussenegger/nvim-dap" },
   { "mrjones2014/smart-splits.nvim" },
   { "neovim/nvim-lspconfig" },
   { "numToStr/Comment.nvim" },
@@ -23,7 +22,6 @@ local plugins = {
   { "nvim-treesitter/nvim-treesitter-context" },
   { "nvim-treesitter/playground" },
   { "ray-x/lsp_signature.nvim" },
-  { "rcarriga/cmp-dap" },
   { "romainl/vim-qf" },
   { "ruifm/gitlinker.nvim" },
   { "saadparwaiz1/cmp_luasnip" },
@@ -800,7 +798,7 @@ require("cmp").setup {
     expand = function(args) require("luasnip").lsp_expand(args.body) end,
   },
   enabled = function()
-    return (vim.bo.buftype ~= "prompt" or require("cmp_dap").is_dap_buffer())
+    return (vim.bo.buftype ~= "prompt")
       and not (
         require("cmp.config.context").in_treesitter_capture "comment"
         and not require("cmp.config.context").in_syntax_group "Comment"
@@ -841,12 +839,6 @@ require("cmp").setup {
     },
   },
 }
-
-require("cmp").setup.filetype({ "dap-repl", "dapui_watches", "dapui_hover" }, {
-  sources = {
-    { name = "dap" },
-  },
-})
 
 require("Comment").setup {
   toggler = {
@@ -1194,7 +1186,6 @@ local metals_config =
   vim.tbl_deep_extend("force", require("metals").bare_config(), {
     on_attach = function(client, bufnr)
       lsp_on_attach(client, bufnr)
-      require("metals").setup_dap()
       nmap(
         "<leader>ms",
         "<cmd>MetalsGotoSuperMethod<cr>",
@@ -1301,93 +1292,7 @@ require("rust-tools").setup {
       },
     },
   },
-  dap = {
-    adapter = require("rust-tools.dap").get_codelldb_adapter(
-      lsp_install_path .. "/packages/codelldb/extension/adapter/codelldb",
-      lsp_install_path .. "/packages/codelldb/extension/lldb/lib/liblldb.dylib"
-    ),
-  },
 }
-
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "dap-repl",
-  group = init_augroup,
-  callback = function()
-    require("dap.ext.autocompl").attach()
-    on_term_open()
-  end,
-})
-
-nmap("<leader>dc", require("dap").continue, "Debug: continue")
-nmap("<F5>", require("dap").continue)
-
-nmap("<leader>dso", require("dap").step_over, "Debug: step over")
-nmap("<F10>", require("dap").step_over)
-nmap("<M-n>", require("dap").step_over)
-
-nmap("<leader>dsi", require("dap").step_into, "Debug: step into")
-nmap("<F11>", require("dap").step_into)
-nmap("<M-s>", require("dap").step_into)
-
-nmap("<leader>dso", require("dap").step_out, "Debug: step out")
-nmap("<F12>", require("dap").step_out)
-
-nmap("<leader>dh", require("dap").run_to_cursor, "Debug: run to cursor")
-nmap("<leader>dp", require("dap").pause, "Debug: pause")
-
-nmap("<leader>du", require("dap").up, "Debug: go up a stack frame")
-nmap("<leader>dd", require("dap").down, "Debug: go down a stack frame")
-
-nmap(
-  "<leader>dbb",
-  require("dap").toggle_breakpoint,
-  "Debug: toggle breakpoint"
-)
-nmap("<leader>dbl", require("dap").list_breakpoints, "Debug: list breakpoints")
-nmap(
-  "<leader>dbc",
-  function() require("dap").set_breakpoint(vim.fn.input "Condition: ") end,
-  "Debug: set conditional breakpoint"
-)
-nmap(
-  "<leader>dbD",
-  require("dap").toggle_breakpoint,
-  "Debug: clear breakpoints"
-)
-
-nmap("<leader>dr", require("dap").run_last, "Debug: relaunch session")
-nmap("<leader>dq", require("dap").terminate, "Debug: terminate session")
-
-vim.fn.sign_define("DapBreakpoint", { text = "-" })
-vim.fn.sign_define("DapBreakpointCondition", { text = "-" })
-vim.fn.sign_define("DapBreakpointRejected", { text = "×" })
-vim.fn.sign_define("DapLogPoint", { text = ">" })
-vim.fn.sign_define("DapStopped", { text = "•" })
-
-nmap(
-  "<M-e>",
-  require("dap.ui.widgets").hover,
-  "Evaluate expression under cursor"
-)
-nmap(
-  "<leader>dv",
-  require("dap.ui.widgets").sidebar(
-    require("dap.ui.widgets").scopes,
-    {},
-    "split"
-  ).open,
-  "Debug: scopes"
-)
-nmap(
-  "<leader>df",
-  require("dap.ui.widgets").sidebar(
-    require("dap.ui.widgets").frames,
-    {},
-    "split"
-  ).open,
-  "Debug: frames"
-)
-nmap("<leader>dt", require("dap").repl.open, "Debug: REPL")
 
 nmap("]q", "<Plug>(qf_qf_next)", "Next in quickfix list")
 nmap("[q", "<Plug>(qf_qf_previous)", "Previous in quickfix list")
