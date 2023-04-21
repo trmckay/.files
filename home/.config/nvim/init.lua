@@ -86,30 +86,10 @@ local function command(...)
   return out:gsub("%s*$", ""), vim.v.shell_error
 end
 
-local function physical_path(path) return vim.loop.fs_readlink(path) or path end
-
 local function disable_text_edit_ui()
   vim.opt_local.cursorline = false
   vim.opt_local.number = false
   vim.opt_local.list = false
-end
-
-local function buf_get_pretty_name(bufnr, opts)
-  opts = opts or {}
-  local title = vim.api.nvim_buf_get_name(bufnr)
-  if opts.tail then title = vim.fn.fnamemodify(title, ":t") end
-  if opts.relative then title = vim.fn.fnamemodify(title, ":.") end
-  if title:find "^term://" then title = vim.b[bufnr].term_title end
-  if vim.bo[bufnr].buftype == "help" then
-    title = vim.fn.fnamemodify(title, ":t:r")
-  end
-  if vim.bo[bufnr].filetype == "lir" then
-    title = require("lir").get_context(bufnr).dir
-  end
-  if vim.bo[bufnr].buftype == "prompt" then title = "[prompt]" end
-  if title == "" then title = vim.bo[bufnr].filetype end
-  if not opts.allow_blank and title:find "^%s*$" then title = "[no name]" end
-  return title
 end
 
 local function on_term_open()
@@ -305,17 +285,6 @@ nmap("G", "Gzz")
 nmap("<leader>r", [[:%s/<C-r><C-w>/<C-r><C-w>/g<Left><Left>]])
 
 nmap(
-  "<leader>Co",
-  function() vim.cmd.edit(physical_path(vim.fn.stdpath "config" .. "/init.lua")) end,
-  "Edit init.lua"
-)
-
-nmap("<leader>ww", "<cmd>silent write<cr>", "Write buffer")
-nmap("<leader>wq", "<cmd>wq<cr>", "Write buffer and close")
-nmap("<leader>wW", "<cmd>write!<cr>", "Force write buffer")
-nmap("<leader>wa", "<cmd>wall<cr>", "Write all buffers")
-
-nmap(
   "<leader>ob",
   function()
     local colorscheme = vim.g.colors_name
@@ -344,31 +313,15 @@ nmap("<leader>ov", function()
   end
 end, "Toggle virtual editing")
 
-local reabbrevs = {
-  { from = "Q", to = "q" },
-  { from = "Q!", to = "q!" },
-  { from = "Q1", to = "q!" },
-  { from = "Qa", to = "qa" },
-  { from = "Qa!", to = "qa!" },
-  { from = "Qall", to = "qall" },
-  { from = "Qall!", to = "qall!" },
-  { from = "W", to = "w" },
-  { from = "W!", to = "w!" },
-  { from = "W1", to = "w!" },
-  { from = "WQ", to = "wq" },
-  { from = "WQ1", to = "wq!" },
-  { from = "Wa", to = "wa" },
-  { from = "Wq", to = "wq" },
-  { from = "Wq1", to = "wq!" },
-  { from = "q1", to = "q!" },
-  { from = "w1", to = "w!" },
-  { from = "wQ", to = "wq" },
-  { from = "wQ1", to = "wq!" },
-  { from = "wq1", to = "wq!" },
-}
-
-for _, abbrev in ipairs(reabbrevs) do
-  vim.cmd(string.format("cnoreabbrev %s %s", abbrev.from, abbrev.to))
+for w in { "", "w", "Q" } do
+  for q in { "", "q", "Q" } do
+    for a in { "", "a", "A" } do
+      for bang in { "", "!" } do
+        local cmd = w + q + a + bang
+        vim.cmd.cnoreabbrev(cmd, cmd:lower())
+      end
+    end
+  end
 end
 
 if vim.fn.has "gui_running" > 0 then
@@ -724,10 +677,10 @@ local function mkline(sections, opts)
       list_flatmap(function(section)
         return table.concat(
           list_flatmap(function(c)
-            local s = c(e)
-            if s then
-              return (opts.component_formatter or function(i) return i end)(s)
+            if type(c) == "function" then
+              return c(e)
             end
+            return c
           end, section),
           opts.separator or "  "
         )
@@ -760,81 +713,32 @@ local function component_git_head(_)
   if head and head ~= "" then return head end
 end
 
-local function component_coords(_) return "%l,%c %P" end
-
 local function component_cwd(_) return vim.fn.getcwd() end
-
-local function component_dap(winnr)
-  if vim.api.nvim_get_current_win() == winnr then
-    if package.loaded.dap then
-      local status = require("dap").status()
-      if status and status ~= "" then return status end
-    end
-  end
-end
-
-local function component_window_title(winnr)
-  return buf_get_pretty_name(
-    vim.api.nvim_win_get_buf(winnr),
-    { relative = true }
-  )
-end
-
-local function component_options(winnr)
-  local bufnr = vim.api.nvim_win_get_buf(winnr)
-  local options = list_flatmap(function(e)
-    if e[2] then return e[1] end
-  end, {
-    { "+", vim.bo[bufnr].modified },
-    {
-      "-",
-      not vim.bo[bufnr].modifiable and vim.bo[bufnr].buftype == "",
-    },
-  })
-  return (#options > 0) and table.concat(options, ",") or nil
-end
-
-local function component_filetype(winnr)
-  local ft = vim.bo[vim.api.nvim_win_get_buf(winnr)].filetype
-  if ft and ft ~= "" then return ft end
-end
 
 local function component_metals(_)
   local status = vim.g["metals_status"]
   if status and status ~= "" then return status end
 end
 
-local function component_mode(_) return vim.fn.mode() end
-
-local function pad(s) return string.format(" %s ", s) end
-
 STATUSLINE = mkline({
   {
     component_cwd,
-    component_git_head,
   },
   {},
   {
-    component_dap,
+    component_git_head,
     component_metals,
-    component_mode,
   },
-}, {
-  line_formatter = pad,
 })
 
 WINBAR = mkline({
   {
-    component_window_title,
+    "%f %M%R%H%W",
+    component_diagnostics,
   },
   {
-    component_options,
-    component_filetype,
-    component_diagnostics,
-    component_coords,
+    "%l,%c %p%",
   },
-}, {
-  line_formatter = pad,
 })
 
 vim.o.statusline = "%!luaeval('STATUSLINE(vim.g.statusline_winid)')"
