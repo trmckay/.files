@@ -25,7 +25,6 @@ local plugins = {
   { "saadparwaiz1/cmp_luasnip" },
   { "scalameta/nvim-metals" },
   { "simrat39/rust-tools.nvim" },
-  { "tamago324/lir-git-status.nvim" },
   { "tamago324/lir.nvim" },
   { "tpope/vim-eunuch" },
   { "tpope/vim-fugitive" },
@@ -1081,16 +1080,6 @@ require("lir").setup {
     ["y"] = require("lir.clipboard.actions").copy,
     ["x"] = require("lir.clipboard.actions").cut,
     ["p"] = require("lir.clipboard.actions").paste,
-    ["<leader>ga"] = function()
-      local ctx = require("lir").get_context()
-      vim.fn.system { "git", "add", ctx:current().fullpath }
-      require("lir.actions").reload()
-    end,
-    ["<leader>gu"] = function()
-      local ctx = require("lir").get_context()
-      vim.fn.system { "git", "reset", ctx:current().fullpath }
-      require("lir.actions").reload()
-    end,
     ["<leader>f"] = function()
       require("telescope.builtin").find_files {
         cwd = require("lir").get_context().dir,
@@ -1119,10 +1108,6 @@ require("lir").setup {
     },
   },
   hide_cursor = false,
-}
-
-require("lir.git_status").setup {
-  show_ignored = false,
 }
 
 local lsp_capabilities = vim.tbl_deep_extend(
