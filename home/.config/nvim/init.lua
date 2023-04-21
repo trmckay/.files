@@ -20,7 +20,6 @@ local plugins = {
     build = function(_) vim.cmd.TSUpdate() end,
   },
   { "nvim-treesitter/nvim-treesitter-context" },
-  { "ray-x/lsp_signature.nvim" },
   { "romainl/vim-qf" },
   { "ruifm/gitlinker.nvim" },
   { "saadparwaiz1/cmp_luasnip" },
@@ -600,6 +599,8 @@ local function lsp_on_attach(client, bufnr)
   )
   nmap("K", vim.lsp.buf.hover, "LSP: hover actions", { buffer = bufnr })
   nmap("<C-c>", vim.lsp.buf.code_action, "LSP: code action", { buffer = bufnr })
+  nmap("<C-s>", vim.lsp.buf.signature_help, "LSP: signature_help", { buffer = bufnr })
+
   nmap(
     "gd",
     require("telescope.builtin").lsp_definitions,
@@ -656,12 +657,6 @@ local function lsp_on_attach(client, bufnr)
 
   vim.api.nvim_buf_create_user_command(0, "LspFormat", fmt, { nargs = 0 })
   nmap("<leader>bf", fmt, "Format buffer", { buffer = bufnr })
-
-  require("lsp_signature").on_attach({
-    handler_opts = { border = border_style },
-    hint_enable = false,
-    toggle_key = "<C-s>",
-  }, bufnr)
 end
 
 local function mkline(sections, opts)
