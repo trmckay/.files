@@ -210,7 +210,6 @@ if not _G.init_sourced then
   vim.o.splitbelow = true
   vim.o.splitright = true
   vim.o.timeoutlen = 2000
-  vim.o.title = true
   vim.o.updatetime = 250
   vim.o.wrap = false
   vim.opt.listchars:append "nbsp:⋅"
@@ -839,8 +838,6 @@ WINBAR = mkline({
 })
 
 vim.o.statusline = "%!luaeval('STATUSLINE(vim.g.statusline_winid)')"
-vim.o.titlestring =
-  string.format("nvim - %s@%s", vim.env.USER, command { "hostname", "-s" })
 
 vim.api.nvim_create_autocmd({ "VimEnter", "BufWinEnter" }, {
   group = init_augroup,
