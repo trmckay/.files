@@ -35,7 +35,6 @@ local plugins = {
   { "williamboman/mason.nvim" },
   { "windwp/nvim-autopairs" },
   { "ellisonleao/gruvbox.nvim" },
-  { "NvChad/nvim-colorizer.lua" },
   { "f-person/auto-dark-mode.nvim" },
 }
 
@@ -1492,10 +1491,3 @@ require("nvim-autopairs").setup {
   disable_in_macro = true,
   disable_in_visualblock = true,
 }
-
-require("colorizer").setup({
-    user_default_options = {
-      names = false,
-    },
-  }
-)
