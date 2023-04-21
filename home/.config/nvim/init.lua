@@ -20,7 +20,6 @@ local plugins = {
     build = function(_) vim.cmd.TSUpdate() end,
   },
   { "nvim-treesitter/nvim-treesitter-context" },
-  { "nvim-treesitter/playground" },
   { "ray-x/lsp_signature.nvim" },
   { "romainl/vim-qf" },
   { "ruifm/gitlinker.nvim" },
@@ -162,37 +161,35 @@ if vim.env.NVIM_LSP_SERVERS then
   )
 end
 
-if not _G.init_sourced then
-  vim.o.cmdheight = 1
-  vim.o.cursorline = true
-  vim.o.expandtab = true
-  vim.o.foldcolumn = "0"
-  vim.o.foldenable = true
-  vim.o.foldlevel = 99
-  vim.o.foldlevelstart = 99
-  vim.o.hidden = true
-  vim.o.ignorecase = true
-  vim.o.list = true
-  vim.o.mouse = nil
-  vim.o.number = true
-  vim.o.scrolloff = 10
-  vim.o.shiftwidth = 4
-  vim.o.shortmess = "acFItosTW"
-  vim.o.showmode = false
-  vim.o.signcolumn = "auto"
-  vim.o.smartcase = true
-  vim.o.smarttab = true
-  vim.o.softtabstop = 4
-  vim.o.spelllang = "en_us"
-  vim.o.splitbelow = true
-  vim.o.splitright = true
-  vim.o.timeoutlen = 2000
-  vim.o.updatetime = 250
-  vim.o.wrap = false
-  vim.opt.listchars:append "nbsp:⋅"
-  vim.opt.listchars:append "tab:» "
-  vim.opt.listchars:append "trail:⋅"
-end
+vim.o.cmdheight = 1
+vim.o.cursorline = true
+vim.o.expandtab = true
+vim.o.foldcolumn = "0"
+vim.o.foldenable = true
+vim.o.foldlevel = 99
+vim.o.foldlevelstart = 99
+vim.o.hidden = true
+vim.o.ignorecase = true
+vim.o.list = true
+vim.o.mouse = nil
+vim.o.number = true
+vim.o.scrolloff = 10
+vim.o.shiftwidth = 4
+vim.o.shortmess = "acFItosTW"
+vim.o.showmode = false
+vim.o.signcolumn = "auto"
+vim.o.smartcase = true
+vim.o.smarttab = true
+vim.o.softtabstop = 4
+vim.o.spelllang = "en_us"
+vim.o.splitbelow = true
+vim.o.splitright = true
+vim.o.timeoutlen = 2000
+vim.o.updatetime = 250
+vim.o.wrap = false
+vim.opt.listchars:append "nbsp:⋅"
+vim.opt.listchars:append "tab:» "
+vim.opt.listchars:append "trail:⋅"
 
 if vim.fn.has "nvim-0.9" == 1 then
   vim.o.diffopt = "linematch:60"
@@ -1464,8 +1461,6 @@ require("nvim-treesitter.configs").setup {
   },
 }
 
-nmap("<leader>T", vim.cmd.TSPlaygroundToggle, "Toggle treesitter playground")
-
 vim.api.nvim_create_autocmd("BufRead", {
   callback = function()
     if ts_disable_large_buf(nil, 0) then vim.cmd.TSContextDisable() end
@@ -1524,6 +1519,3 @@ require("colorizer").setup({
     },
   }
 )
-
-vim.api.nvim_exec_autocmds("VimEnter", { group = init_augroup })
-_G.init_sourced = true
