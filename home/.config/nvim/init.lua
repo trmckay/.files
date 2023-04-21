@@ -22,7 +22,6 @@ local plugins = {
   },
   { "nvim-treesitter/nvim-treesitter-context" },
   { "nvim-treesitter/playground" },
-  { "rafamadriz/friendly-snippets" },
   { "ray-x/lsp_signature.nvim" },
   { "rcarriga/cmp-dap" },
   { "romainl/vim-qf" },
@@ -772,36 +771,6 @@ require("luasnip").config.set_config {
   history = true,
   update_events = "TextChanged,TextChangedI",
 }
-
-local snip = require("luasnip").snippet
-local text_node = require("luasnip").text_node
-local fn_node = require("luasnip").function_node
-
-local snippets = {
-  all = function()
-    return {
-      snip("date", fn_node(function() return os.date "%Y-%m-%d" end)),
-    }
-  end,
-  python = function() return { snip("bp", text_node [[breakpoint()]]) } end,
-}
-
-require("luasnip").add_snippets("all", snippets["all"]())
-require("luasnip.loaders.from_vscode").lazy_load()
-
-local snippets_loaded = {}
-vim.api.nvim_create_autocmd({ "BufReadPre", "BufNewFile" }, {
-  group = init_augroup,
-  callback = function()
-    local ft = vim.bo.filetype
-    if not snippets_loaded[ft] then
-      snippets_loaded[ft] = true
-      if snippets[ft] then
-        require("luasnip").add_snippets(ft, snippets[ft]())
-      end
-    end
-  end,
-})
 
 map({ "i", "s", "n" }, "<C-j>", function()
   if require("luasnip").jumpable(-1) then require("luasnip").jump(-1) end
