@@ -706,7 +706,7 @@ WINBAR = mkline({
     component_diagnostics,
   },
   {
-    "%l,%c %p%",
+    "%l,%c %p%%",
   },
 })
 
