@@ -299,14 +299,7 @@ for _, w in ipairs({ "", "w", "W" }) do
 end
 
 if vim.fn.has "gui_running" > 0 then
-  if vim.fn.has "gui_vimr" <= 0 then
-    vim.cmd "GuiFont! JetBrains\\ Mono:h12"
-    vim.cmd [[
-      GuiPopupmenu 0
-      GuiScrollBar 0
-      GuiTabline 0
-    ]]
-  end
+  vim.o.guifont = "JetBrains Mono:h9"
 end
 
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
