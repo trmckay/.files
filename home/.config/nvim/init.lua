@@ -285,7 +285,7 @@ nmap("<leader>ov", function()
   end
 end, "Toggle virtual editing")
 
-for _, w in ipairs({ "", "w", "Q" }) do
+for _, w in ipairs({ "", "w", "W" }) do
   for _, q in ipairs({ "", "q", "Q" }) do
     for _, a in ipairs({ "", "a", "A" }) do
       for _, bang in ipairs({ "", "!" }) do
@@ -696,8 +696,8 @@ STATUSLINE = mkline({
   },
   {},
   {
-    component_git_head,
     component_metals,
+    component_git_head,
   },
 })
 

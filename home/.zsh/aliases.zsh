@@ -20,16 +20,25 @@ if command_exists sudo; then
 fi
 
 if command_exists tmux; then
+    alias tml='tmux ls'
     function tmn {
         tmux new-session -A -s "${1:-$(basename $(pwd))}"
     }
-    alias tml='tmux ls'
     if command_exists fzf; then
         function tma {
             tmux attach-session -t "${1:-$(tmux ls | fzf | cut -d':' -f1)}"
         }
     else
         alias tma='tmux attach-session -t'
+    fi
+    if command_exists fd && \
+        command_exists fzf && \
+        command_exists nvim;
+    then
+        function tv {
+            cd "$1" && \
+                tmux new-session -s "${2-$(basename $(git -C "$1" branch --show-current || pwd))}" nvim
+        }
     fi
 fi
 
