@@ -1031,7 +1031,7 @@ nmap("<C-w>-", function()
 end, "Browse files here in a split", { expr = true })
 
 require("lir").setup {
-  show_hidden_files = false,
+  show_hidden_files = true,
   devicons_enable = false,
   mappings = {
     ["cd"] = require("lir.actions").cd,
