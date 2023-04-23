@@ -5,6 +5,12 @@ alias mkdir='mkdir -p'
 alias cdiff='diff --color=always'
 alias cless='less -R'
 
+function cplink {
+    dest="$(readlink "$1")"
+    rm "$1"
+    cp "$dest" "$1"
+}
+
 if command_exists gdb; then
     alias gdb='gdb -q'
 fi
