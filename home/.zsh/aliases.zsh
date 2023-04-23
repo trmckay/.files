@@ -28,11 +28,14 @@ fi
 if command_exists tmux; then
     alias tml='tmux ls'
     function tmn {
-        tmux new-session -A -s "${1:-$(basename $(pwd))}"
+        exec tmux new-session -A -s "${1:-$(basename $(pwd))}"
     }
     if command_exists fzf; then
         function tma {
-            tmux attach-session -t "${1:-$(tmux ls | fzf | cut -d':' -f1)}"
+            session="${1:-$(tmux ls | fzf | cut -d':' -f1)}"
+            if [[ ! -z $session ]]; then
+                exec tmux attach-session -t "$session"
+            fi
         }
     else
         alias tma='tmux attach-session -t'
