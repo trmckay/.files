@@ -102,4 +102,10 @@ if command_exists nix; then
             nix shell nixpkgs#$pkg
         fi
     }
+    alias nd='nix develop --command zsh'
+    alias nfu='nix flake update'
+    alias nrb='sudo nixos-rebuild'
+    alias nrbs='nrb switch'
+    alias nrbb='nrb boot'
+    alias nrbd='nrb dry-build'
 fi
