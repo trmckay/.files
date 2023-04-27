@@ -58,17 +58,19 @@ else
 fi
 
 if command_exists nvim; then
-    function _nvim {
+    function nvim-safe {
         if [[ -z $NVIM ]]; then
             nvim "$@"
         else
             echo "Refusing to nest nvim"
         fi
     }
-    alias v='_nvim'
-    alias vi='_nvim'
-    alias vim='_nvim'
-    alias gv='_nvim +Git +only'
+    compdef _vim nvim-safe
+    alias v='nvim-safe'
+    alias vi='nvim-safe'
+    alias vim='nvim-safe'
+    alias nvim='nvim-safe'
+    alias gv='nvim-safe +Git +only'
 fi
 
 if command_exists bat; then
