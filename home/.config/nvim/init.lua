@@ -237,21 +237,6 @@ nmap("G", "Gzz")
 nmap("<leader>r", [[:%s/<C-r><C-w>/<C-r><C-w>/g<Left><Left>]])
 
 nmap(
-  "<leader>ob",
-  function()
-    local colorscheme = vim.g.colors_name
-    local background = vim.opt.background:get()
-    if background == "light" then
-      vim.o.background = "dark"
-    else
-      vim.o.background = "light"
-    end
-    vim.cmd.colorscheme(colorscheme)
-  end,
-  "Toggle background"
-)
-
-nmap(
   "<leader>ow",
   function() vim.opt_local.wrap = not vim.opt_local.wrap:get() end,
   "Toggle line wrap"
@@ -1411,9 +1396,7 @@ require("ufo").setup {
   provider_selector = function(_, _, _) return { "treesitter", "indent" } end,
 }
 
-require("smart-splits").setup {
-  tmux_integration = false,
-}
+require("smart-splits").setup()
 
 for _, fmt in ipairs { "<C-w>%s", "<C-%s>" } do
   nmap(string.format(fmt, "h"), function()
