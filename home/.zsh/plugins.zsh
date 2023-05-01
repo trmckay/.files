@@ -45,10 +45,6 @@ source_git \
     "820aaba911fce0594bf17f0e9a82092a6af7810e"
 
 source_git \
-    "https://github.com/zsh-users/zsh-syntax-highlighting" \
-    "754cefe0181a7acd42fdcb357a67d0217291ac47"
-
-source_git \
     "https://github.com/zsh-users/zsh-autosuggestions" \
     "a411ef3e0992d4839f0732ebeb9823024afaaaa8"
 
