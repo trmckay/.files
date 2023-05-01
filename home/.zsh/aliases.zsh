@@ -105,6 +105,7 @@ if command_exists nix; then
         fi
     }
     alias nd='nix develop --command zsh'
+    alias nf='nix flake'
     alias nfu='nix flake update'
     alias nrb='sudo nixos-rebuild'
     alias nrbs='nrb switch'
