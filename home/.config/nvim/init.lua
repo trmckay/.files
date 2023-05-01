@@ -250,17 +250,39 @@ nmap("<leader>ov", function()
   end
 end, "Toggle virtual editing")
 
-for _, w in ipairs({ "", "w", "W" }) do
-  for _, q in ipairs({ "", "q", "Q" }) do
-    for _, a in ipairs({ "", "a", "A" }) do
-      for _, bang in ipairs({ "", "!" }) do
-        local cmd = w .. q .. a .. bang
-        if cmd ~= "" then
-          vim.cmd.cnoreabbrev(cmd, cmd:lower())
-        end
-      end
-    end
-  end
+for _, cmd in ipairs({
+  "Q!",
+  "Q",
+  "QA!",
+  "QA",
+  "Qa!",
+  "Qa",
+  "W",
+  "WA!",
+  "WA",
+  "WQ!",
+  "WQ",
+  "Wa!",
+  "Wa",
+  "Wq!",
+  "Wq",
+  "WqA!",
+  "WqA",
+  "qA!",
+  "qA!",
+  "qA",
+  "wA!",
+  "wA",
+  "wQ!",
+  "wQ",
+  "wQA!",
+  "wQA",
+  "wQa!",
+  "wQa",
+  "wqA!",
+  "wqA",
+}) do
+  vim.cmd.cnoreabbrev(cmd, cmd:lower())
 end
 
 if vim.fn.has "gui_running" > 0 then
