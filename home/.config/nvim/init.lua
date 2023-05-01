@@ -34,7 +34,7 @@ local plugins = {
   { "trmckay/based.nvim" },
   { "williamboman/mason.nvim" },
   { "windwp/nvim-autopairs" },
-  { "ellisonleao/gruvbox.nvim" },
+  { "RRethy/nvim-base16" },
 }
 
 local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
@@ -219,29 +219,6 @@ for ft, cfg in pairs(ft_overrides) do
 end
 
 nmap("<leader>L", vim.cmd.Lazy, "Manage plugins")
-
-require("gruvbox").setup({
-  italic = {
-    strings = false,
-  },
-  contrast = "hard",
-  overrides = {
-    CursorLineNr = { link = "LineNr" },
-    GruvboxAquaSign = { bg = "" },
-    GruvboxBlueSign = { bg = "" },
-    GruvboxGreenSign = { bg = "" },
-    GruvboxOrangeSign = { bg = "" },
-    GruvboxPurpleSign = { bg = "" },
-    GruvboxRedSign = { bg = "" },
-    GruvboxYellowSign = { bg = "" },
-    MsgArea = { link = "LineNr" },
-    SignColumn = { link = "Normal" },
-    TreesitterContext = { link = "Normal" },
-    WinBarNC = { link = "WinBar" },
-  },
-})
-
-vim.cmd.colorscheme "gruvbox"
 
 nmap("<esc>", "<cmd>noh|lclose|cclose<cr>")
 map({ "n", "v" }, "H", "0")
