@@ -620,7 +620,21 @@ local function lsp_on_attach(client, bufnr)
   nmap("<leader>bf", fmt, "Format buffer", { buffer = bufnr })
 end
 
+require('base16-colorscheme').with_config {
+  telescope = false,
+}
+
 vim.cmd.colorscheme "base16-black-metal"
+
+local colors = require("base16-colorscheme").colors
+for group, value in pairs({
+  Comment = { fg = colors.base04, italic = true },
+  TSComment = { link = "Comment" },
+  TreesitterContext = { link = "Normal" },
+  WinSeparator = { fg = colors.base03 },
+}) do
+  vim.api.nvim_set_hl(0, group, value)
+end
 
 local function mkline(sections, opts)
   opts = opts or {}
