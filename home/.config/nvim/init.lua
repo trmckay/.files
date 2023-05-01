@@ -51,6 +51,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup(plugins, {
+  lockfile = vim.env.NVIM_LOCKFILE or vim.fn.stdpath("config") .. "/lazy-lock.json",
   ui = {
     icons = {
       cmd = "⌘",
