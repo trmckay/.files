@@ -226,15 +226,17 @@ require("gruvbox").setup({
   contrast = "hard",
   overrides = {
     CursorLineNr = { link = "LineNr" },
-    SignColumn = { link = "Normal" },
+    GruvboxAquaSign = { bg = "" },
+    GruvboxBlueSign = { bg = "" },
     GruvboxGreenSign = { bg = "" },
     GruvboxOrangeSign = { bg = "" },
     GruvboxPurpleSign = { bg = "" },
-    GruvboxYellowSign = { bg = "" },
     GruvboxRedSign = { bg = "" },
-    GruvboxBlueSign = { bg = "" },
-    GruvboxAquaSign = { bg = "" },
+    GruvboxYellowSign = { bg = "" },
     MsgArea = { link = "LineNr" },
+    SignColumn = { link = "Normal" },
+    TreesitterContext = { link = "Normal" },
+    WinBarNC = { link = "WinBar" },
   },
 })
 
