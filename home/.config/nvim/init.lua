@@ -807,6 +807,7 @@ require("cmp").setup {
       border = border_style,
     },
   },
+  preselect = require("cmp").PreselectMode.None,
 }
 
 require("Comment").setup {
