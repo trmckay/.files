@@ -613,6 +613,8 @@ local function lsp_on_attach(client, bufnr)
   nmap("<leader>bf", fmt, "Format buffer", { buffer = bufnr })
 end
 
+vim.cmd.colorscheme "base16-black-metal"
+
 local function mkline(sections, opts)
   opts = opts or {}
   return function(e)
