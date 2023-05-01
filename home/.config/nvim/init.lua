@@ -624,17 +624,21 @@ require('base16-colorscheme').with_config {
   telescope = false,
 }
 
-vim.cmd.colorscheme "base16-black-metal"
+vim.api.nvim_create_autocmd("ColorScheme", {
+  callback = function()
+    local colors = require("base16-colorscheme").colors
+    for group, value in pairs({
+      Comment = { fg = colors.base04, italic = true },
+      TSComment = { link = "Comment" },
+      TreesitterContext = { link = "Normal" },
+      WinSeparator = { fg = colors.base03 },
+    }) do
+      vim.api.nvim_set_hl(0, group, value)
+    end
+  end
+})
 
-local colors = require("base16-colorscheme").colors
-for group, value in pairs({
-  Comment = { fg = colors.base04, italic = true },
-  TSComment = { link = "Comment" },
-  TreesitterContext = { link = "Normal" },
-  WinSeparator = { fg = colors.base03 },
-}) do
-  vim.api.nvim_set_hl(0, group, value)
-end
+vim.cmd.colorscheme "base16-black-metal"
 
 local function mkline(sections, opts)
   opts = opts or {}
