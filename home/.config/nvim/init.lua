@@ -34,7 +34,7 @@ local plugins = {
   { "trmckay/based.nvim" },
   { "williamboman/mason.nvim" },
   { "windwp/nvim-autopairs" },
-  { "RRethy/nvim-base16" },
+  { "EdenEast/nightfox.nvim" }
 }
 
 local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
@@ -624,41 +624,29 @@ local function lsp_on_attach(client, bufnr)
   nmap("<leader>bf", fmt, "Format buffer", { buffer = bufnr })
 end
 
-require('base16-colorscheme').with_config {
-  telescope = false,
+require("nightfox").setup {
+  options = {
+    dim_inactive = true,
+    styles = {
+      comments = "italic",
+      functions = "bold",
+    }
+  },
+  palettes = {
+    carbonfox = {
+      bg1 = "#101010"
+    }
+  },
+  groups = {
+    all = {
+      CursorLineNr = { link = "LineNr" },
+      CursorLine = { bg = "palette.bg2" },
+      WinSeparator = { fg = "palette.bg3" },
+    }
+  }
 }
 
-local colors = {
-  base00 = "#000000",
-  base01 = "#121212",
-  base02 = "#222222",
-  base03 = "#333333",
-  base04 = "#999999",
-  base05 = "#c1c1c1",
-  base06 = "#999999",
-  base07 = "#c1c1c1",
-  base08 = "#a06666",
-  base09 = "#dd9999",
-  base0A = "#aaaaaa",
-  base0B = "#5f8787",
-  base0C = "#aaaaaa",
-  base0D = "#888888",
-  base0E = "#999999",
-  base0F = "#444444"
-}
-
-require('base16-colorscheme').setup(colors)
-
-for group, value in pairs({
-  Comment = { fg = colors.base04, italic = true },
-  TSComment = { link = "Comment" },
-  TreesitterContext = { link = "Normal" },
-  WinSeparator = { fg = colors.base03 },
-  LineNr = { fg = colors.base03 },
-  CursorLineNr = { fg = colors.base03, bold = true },
-}) do
-  vim.api.nvim_set_hl(0, group, value)
-end
+vim.cmd.colorscheme "carbonfox"
 
 local function mkline(sections, opts)
   opts = opts or {}
