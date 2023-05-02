@@ -1448,28 +1448,10 @@ require("ufo").setup {
 require("smart-splits").setup()
 
 for _, fmt in ipairs { "<C-w>%s", "<C-%s>" } do
-  nmap(string.format(fmt, "h"), function()
-    if vim.fn.winnr() == vim.fn.winnr "h" then
-      vim.cmd.tabprev()
-    else
-      require("smart-splits").move_cursor_left()
-    end
-  end)
-
-  nmap(string.format(fmt, "l"), function()
-    if vim.fn.winnr() == vim.fn.winnr "l" then
-      vim.cmd.tabnext()
-    else
-      require("smart-splits").move_cursor_right()
-    end
-  end)
-
-  nmap(
-    string.format(fmt, "j"),
-    require("smart-splits").move_cursor_down,
-    "Window down"
-  )
-  nmap(string.format(fmt, "k"), require("smart-splits").move_cursor_up)
+  nmap(string.format(fmt, "h"),  require("smart-splits").move_cursor_left)
+  nmap(string.format(fmt, "l"),  require("smart-splits").move_cursor_right)
+  nmap( string.format(fmt, "j"), require("smart-splits").move_cursor_down)
+  nmap(string.format(fmt, "k"),  require("smart-splits").move_cursor_up)
 end
 
 nmap("<M-h>", require("smart-splits").resize_left)
