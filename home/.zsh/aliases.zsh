@@ -71,6 +71,12 @@ if command_exists nvim; then
     alias vim='nvim-safe'
     alias nvim='nvim-safe'
     alias gv='nvim-safe +Git +only'
+
+    if command_exists nix; then
+        function nvim-cfg {
+            env NVIM_LOCKFILE="$2" nvim -u "$1" "$1"
+        }
+    fi
 fi
 
 if command_exists bat; then
