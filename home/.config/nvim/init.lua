@@ -262,12 +262,16 @@ for _, cmd in ipairs({
   "WA",
   "WQ!",
   "WQ",
+  "WQa!",
+  "WQa",
   "Wa!",
   "Wa",
   "Wq!",
   "Wq",
   "WqA!",
   "WqA",
+  "Wqa!",
+  "Wqa",
   "qA!",
   "qA!",
   "qA",
@@ -624,21 +628,37 @@ require('base16-colorscheme').with_config {
   telescope = false,
 }
 
-vim.api.nvim_create_autocmd("ColorScheme", {
-  callback = function()
-    local colors = require("base16-colorscheme").colors
-    for group, value in pairs({
-      Comment = { fg = colors.base04, italic = true },
-      TSComment = { link = "Comment" },
-      TreesitterContext = { link = "Normal" },
-      WinSeparator = { fg = colors.base03 },
-    }) do
-      vim.api.nvim_set_hl(0, group, value)
-    end
-  end
-})
+local colors = {
+  base00 = "#000000",
+  base01 = "#121212",
+  base02 = "#222222",
+  base03 = "#333333",
+  base04 = "#999999",
+  base05 = "#c1c1c1",
+  base06 = "#999999",
+  base07 = "#c1c1c1",
+  base08 = "#a06666",
+  base09 = "#dd9999",
+  base0A = "#aaaaaa",
+  base0B = "#5f8787",
+  base0C = "#aaaaaa",
+  base0D = "#888888",
+  base0E = "#999999",
+  base0F = "#444444"
+}
 
-vim.cmd.colorscheme "base16-black-metal"
+require('base16-colorscheme').setup(colors)
+
+for group, value in pairs({
+  Comment = { fg = colors.base04, italic = true },
+  TSComment = { link = "Comment" },
+  TreesitterContext = { link = "Normal" },
+  WinSeparator = { fg = colors.base03 },
+  LineNr = { fg = colors.base03 },
+  CursorLineNr = { fg = colors.base03, bold = true },
+}) do
+  vim.api.nvim_set_hl(0, group, value)
+end
 
 local function mkline(sections, opts)
   opts = opts or {}
