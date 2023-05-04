@@ -70,6 +70,12 @@ require("lazy").setup(plugins, {
   },
 })
 
+local init_augroup = vim.api.nvim_create_augroup("UserConfig", { clear = true })
+
+local border_style = "single"
+
+vim.g.mapleader = " "
+
 local function with(fn, args)
   return function() fn(unpack(args)) end
 end
@@ -90,6 +96,24 @@ local function on_term_open()
   vim.opt_local.winbar = nil
 end
 
+local function float_window(winid, opts)
+  opts = opts or {}
+  local ui = vim.api.nvim_list_uis()[1]
+  local win_width = opts.width or math.floor(ui.width / 1.5)
+  local win_height = opts.height or math.floor(ui.height / 1.5)
+  opts = vim.tbl_deep_extend("force", {
+    relative = "editor",
+    width = win_width,
+    height = win_height,
+    col = (ui.width / 2) - (win_width / 2),
+    row = (ui.height / 2) - (win_height / 2),
+    border = border_style,
+  }, opts)
+  local float = vim.api.nvim_open_win(vim.api.nvim_win_get_buf(winid), 1, opts)
+  vim.api.nvim_win_close(winid, true)
+  return float
+end
+
 local function list_flatmap(func, list)
   vim.validate { func = { func, "c" }, list = { list, "t" } }
   local rettab = {}
@@ -108,8 +132,6 @@ local function list_flatmap(func, list)
   return rettab
 end
 
-vim.g.mapleader = " "
-
 local function map(mode, lhs, rhs, desc, opts)
   local merged_opts = vim.tbl_deep_extend(
     "force",
@@ -122,10 +144,6 @@ end
 local function nmap(lhs, rhs, desc, opts) map("n", lhs, rhs, desc, opts) end
 
 local function vmap(lhs, rhs, desc, opts) map("v", lhs, rhs, desc, opts) end
-
-local init_augroup = vim.api.nvim_create_augroup("UserConfig", { clear = true })
-
-local border_style = "single"
 
 local function in_git_repo()
   local _, stat = command { "git", "rev-parse", "--is-inside-work-tree" }
@@ -626,7 +644,6 @@ end
 
 require("nightfox").setup {
   options = {
-    dim_inactive = true,
     styles = {
       comments = "italic",
       functions = "bold",
@@ -856,7 +873,17 @@ nmap(
   "Git: changed files"
 )
 
-nmap("<leader>gg", "<cmd>tab Git<cr>", "Git: status")
+nmap("<leader>gg", function()
+  vim.cmd.Git()
+  local float = float_window(vim.api.nvim_get_current_win())
+  vim.api.nvim_create_autocmd("WinLeave", {
+    once = true,
+    group = init_augroup,
+    callback = function()
+      vim.api.nvim_win_close(float, true)
+    end
+  })
+end, "Git: status")
 
 nmap("<leader>gL", "<cmd>Git log -- %<cr>", "Git: log file")
 nmap("<leader>gl", "<cmd>Git log<cr>", "Git: log")
