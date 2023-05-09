@@ -1,3 +1,5 @@
 HISTFILE=$HOME/.zsh/histfile
-HISTSIZE=2000
-SAVEHIST=1000
+HISTSIZE=20000
+SAVEHIST=10000
+
+setopt share_history
