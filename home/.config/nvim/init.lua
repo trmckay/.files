@@ -1,13 +1,7 @@
 local plugins = {
-  { "hrsh7th/cmp-buffer" },
-  { "hrsh7th/cmp-nvim-lsp" },
-  { "hrsh7th/cmp-nvim-lua" },
-  { "hrsh7th/cmp-path" },
-  { "hrsh7th/nvim-cmp" },
   { "kevinhwang91/nvim-ufo" },
   { "kevinhwang91/promise-async" },
   { "lewis6991/gitsigns.nvim" },
-  { "L3MON4D3/LuaSnip" },
   { "mrjones2014/smart-splits.nvim" },
   { "neovim/nvim-lspconfig" },
   { "numToStr/Comment.nvim" },
@@ -22,7 +16,6 @@ local plugins = {
   { "nvim-treesitter/nvim-treesitter-context" },
   { "romainl/vim-qf" },
   { "ruifm/gitlinker.nvim" },
-  { "saadparwaiz1/cmp_luasnip" },
   { "scalameta/nvim-metals" },
   { "simrat39/rust-tools.nvim" },
   { "tamago324/lir.nvim" },
@@ -32,7 +25,6 @@ local plugins = {
   { "tpope/vim-rsi" },
   { "tpope/vim-surround" },
   { "trmckay/based.nvim" },
-  { "williamboman/mason.nvim" },
   { "windwp/nvim-autopairs" },
   { "EdenEast/nightfox.nvim" }
 }
@@ -83,17 +75,6 @@ end
 local function command(...)
   local out = vim.fn.system(...)
   return out:gsub("%s*$", ""), vim.v.shell_error
-end
-
-local function disable_text_edit_ui()
-  vim.opt_local.cursorline = false
-  vim.opt_local.number = false
-  vim.opt_local.list = false
-end
-
-local function on_term_open()
-  disable_text_edit_ui()
-  vim.opt_local.winbar = nil
 end
 
 local function float_window(winid, opts)
@@ -165,18 +146,29 @@ local function git_modified_files()
   return {}
 end
 
+local function set_local_tab_width(width)
+    vim.opt_local.shiftwidth = width
+    vim.opt_local.softtabstop = width
+end
+
 local lsp_install_path = vim.fn.stdpath "data" .. "/lsp"
 
 local lsp_servers = { "lua_ls", "clangd", "pyright", "rnix" }
-if vim.env.NVIM_LSP_SERVERS then
-  local requested_servers = vim.split(vim.env.NVIM_LSP_SERVERS, ",")
-  lsp_servers = vim.tbl_filter(
-    function(server) return vim.tbl_contains(requested_servers, server) end,
-    lsp_servers
-  )
+
+if vim.env.NVIM_LSP_SERVERS ~= nil then
+  if vim.env.NVIM_LSP_SERVERS:lower() == "none" then
+    lsp_servers = {}
+  elseif vim.env.NVIM_LSP_SERVERS then
+    local requested_servers = vim.split(vim.env.NVIM_LSP_SERVERS, ",")
+    lsp_servers = vim.tbl_filter(
+      function(server) return vim.tbl_contains(requested_servers, server) end,
+      lsp_servers
+    )
+  end
 end
 
 vim.o.cmdheight = 1
+vim.o.completeopt = "menu,menuone,noselect"
 vim.o.cursorline = true
 vim.o.expandtab = true
 vim.o.foldcolumn = "0"
@@ -213,19 +205,10 @@ if vim.fn.has "nvim-0.9" == 1 then
 end
 
 local ft_overrides = {
-  lua = function()
-    vim.opt_local.shiftwidth = 2
-    vim.opt_local.softtabstop = 2
-  end,
-  nix = function()
-    vim.opt_local.shiftwidth = 2
-    vim.opt_local.softtabstop = 2
-  end,
+  lua = with(set_local_tab_width, { 2 }),
+  nix = with(set_local_tab_width, { 2 }),
   text = function() vim.opt_local.wrap = true end,
   markdown = function() vim.opt_local.wrap = true end,
-  fugitive = disable_text_edit_ui,
-  git = disable_text_edit_ui,
-  lir = disable_text_edit_ui,
 }
 
 for ft, cfg in pairs(ft_overrides) do
@@ -252,7 +235,7 @@ nmap("<C-o>", "<C-o>zz")
 nmap("<C-i>", "<C-i>zz")
 nmap("gg", "ggzz")
 nmap("G", "Gzz")
-nmap("<leader>r", [[:%s/<C-r><C-w>/<C-r><C-w>/g<Left><Left>]])
+nmap("<leader>r", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/g<Left><Left>]])
 
 nmap(
   "<leader>ow",
@@ -344,13 +327,6 @@ nmap("<leader>bs", function()
   vim.api.nvim_win_set_buf(0, bufnr)
 end, "Open scratch file")
 
-vim.api.nvim_create_autocmd("BufEnter", {
-  group = init_augroup,
-  callback = function()
-    if vim.bo.buftype == "nofile" then disable_text_edit_ui() end
-  end,
-})
-
 vim.api.nvim_create_autocmd({ "VimResized", "VimResume" }, {
   group = init_augroup,
   callback = function() vim.cmd.wincmd "=" end,
@@ -363,22 +339,6 @@ vim.api.nvim_create_user_command("Filter", function(opts)
   end
   vim.cmd(string.format("%%!%s", opts.args))
 end, { nargs = "+", complete = "shellcmd" })
-
-vim.api.nvim_create_user_command("HexDump", function(_)
-  if vim.bo.buftype ~= "" then
-    vim.notify("Not a file", vim.log.levels.ERROR)
-    return
-  end
-  local path = vim.api.nvim_buf_get_name(0)
-  local bufnr = vim.api.nvim_create_buf(false, true)
-  vim.api.nvim_buf_call(bufnr, function()
-    vim.cmd(string.format("r !xxd %s", path))
-    vim.bo[bufnr].ft = "xxd"
-    vim.bo[bufnr].modifiable = false
-  end)
-  vim.cmd.split()
-  vim.api.nvim_win_set_buf(0, bufnr)
-end, { nargs = 0 })
 
 if vim.fn.executable "rg" == 1 then
   vim.o.grepprg = [[rg --vimgrep --no-heading]]
@@ -526,11 +486,6 @@ nmap(
   "New terminal in a tab"
 )
 
-vim.api.nvim_create_autocmd("TermOpen", {
-  group = init_augroup,
-  callback = on_term_open,
-})
-
 local function update_tmux_env()
   if not vim.env.TMUX then return end
   for _, line in
@@ -574,6 +529,8 @@ nmap("<C-q>", "<cmd>quit<cr>", "Close window")
 nmap("<leader>Q", "<cmd>quitall<cr>", "Close all windows")
 
 local function lsp_on_attach(client, bufnr)
+  vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
+
   nmap(
     "<F2>",
     vim.lsp.buf.rename,
@@ -663,12 +620,12 @@ require("nightfox").setup {
   }
 }
 
-vim.cmd.colorscheme "carbonfox"
+vim.cmd.colorscheme "terafox"
 
 local function mkline(sections, opts)
   opts = opts or {}
   return function(e)
-    local l = table.concat(
+    local l = string.format(" %s ", table.concat(
       list_flatmap(function(section)
         return table.concat(
           list_flatmap(function(c)
@@ -681,7 +638,7 @@ local function mkline(sections, opts)
         )
       end, sections),
       "%="
-    )
+    ))
     return (opts.line_formatter or function(i) return i end)(l)
   end
 end
@@ -762,82 +719,6 @@ map(
   "Convert base from decimal"
 )
 map({ "n", "v" }, "<C-b>", require("based").convert, "Convert base")
-
-require("luasnip").config.set_config {
-  history = true,
-  update_events = "TextChanged,TextChangedI",
-}
-
-map({ "i", "s", "n" }, "<C-j>", function()
-  if require("luasnip").jumpable(-1) then require("luasnip").jump(-1) end
-end, "Go to previous snippet node")
-
-map({ "i", "s", "n" }, "<C-l>", function()
-  if require("luasnip").choice_active() then
-    require("luasnip").change_choice(1)
-  end
-end, "Cycle snippet choice node")
-
-map({ "i", "s", "n" }, "<C-k>", function()
-  if require("cmp").get_selected_entry() ~= nil then
-    require("cmp").confirm {
-      behavior = require("cmp").ConfirmBehavior.Replace,
-      select = false,
-    }
-  elseif require("luasnip").expand_or_jumpable() then
-    require("luasnip").expand_or_jump()
-  end
-end)
-
-vim.o.completeopt = "menu,menuone,noselect"
-
-require("cmp").setup {
-  snippet = {
-    expand = function(args) require("luasnip").lsp_expand(args.body) end,
-  },
-  enabled = function()
-    return (vim.bo.buftype ~= "prompt")
-      and not (
-        require("cmp.config.context").in_treesitter_capture "comment"
-        and not require("cmp.config.context").in_syntax_group "Comment"
-      )
-  end,
-  mapping = {
-    ["<C-b>"] = require("cmp").mapping.scroll_docs(-4),
-    ["<C-f>"] = require("cmp").mapping.scroll_docs(4),
-    ["<C-n>"] = require("cmp").mapping.select_next_item {
-      behavior = require("cmp").SelectBehavior.Select,
-    },
-    ["<C-p>"] = require("cmp").mapping.select_prev_item {
-      behavior = require("cmp").SelectBehavior.Select,
-    },
-    ["<C-e>"] = require("cmp").mapping.confirm {
-      behavior = require("cmp").ConfirmBehavior.Replace,
-      select = true,
-    },
-    ["<CR>"] = require("cmp").mapping.confirm {
-      behavior = require("cmp").ConfirmBehavior.Insert,
-      select = false,
-    },
-  },
-  sources = require("cmp").config.sources {
-    { name = "luasnip" },
-    { name = "nvim_lua" },
-    { name = "nvim_lsp" },
-    { name = "path" },
-    {
-      name = "buffer",
-      keyword_length = 2,
-      max_item_count = 5,
-    },
-  },
-  window = {
-    documentation = {
-      border = border_style,
-    },
-  },
-  preselect = require("cmp").PreselectMode.None,
-}
 
 require("Comment").setup {
   toggler = {
@@ -1128,18 +1009,12 @@ require("lir").setup {
   hide_cursor = false,
 }
 
-local lsp_capabilities = vim.tbl_deep_extend(
-  "force",
-  vim.lsp.protocol.make_client_capabilities(),
-  require("cmp_nvim_lsp").default_capabilities()
-)
-
 local lsp_config = {
   on_attach = lsp_on_attach,
   flags = {
     debounce_text_changes = 1000,
   },
-  capabilities = lsp_capabilities,
+  capabilities = vim.lsp.protocol.make_client_capabilities(),
   settings = {
     Lua = {
       diagnostics = {
@@ -1162,20 +1037,6 @@ local lsp_config = {
 for _, lsp in ipairs(lsp_servers) do
   require("lspconfig")[lsp].setup(lsp_config)
 end
-
-nmap("<leader>Mi", "<cmd>Mason<cr>", "Mason: manage installations")
-nmap("<leader>Ml", "<cmd>MasonLog<cr>", "Mason: view logs")
-
-require("mason").setup {
-  install_root_dir = lsp_install_path,
-  ui = {
-    icons = {
-      package_installed = "-",
-      package_pending = "*",
-      package_uninstalled = "x",
-    },
-  },
-}
 
 local metals_config =
   vim.tbl_deep_extend("force", require("metals").bare_config(), {
@@ -1241,19 +1102,6 @@ require("rust-tools").setup {
   server = {
     on_attach = function(client, bufnr)
       lsp_on_attach(client, bufnr)
-
-      nmap(
-        "<leader>rr",
-        require("rust-tools").runnables.runnables,
-        "Rust: show runnables",
-        { buffer = bufnr }
-      )
-      nmap(
-        "<leader>rd",
-        require("rust-tools").debuggables.debuggables,
-        "Rust: show debuggables",
-        { buffer = bufnr }
-      )
       nmap(
         "K",
         require("rust-tools").hover_actions.hover_actions,
