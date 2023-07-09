@@ -3,12 +3,6 @@ function _component_exit_code {
     echo "%(?..(%F{magenta}$ZSH_LAST_EXIT%f%) )"
 }
 
-function _component_ssh {
-    if [[ ! -z $SSH_CLIENT ]]; then
-        echo "%F{white}(ssh)%f "
-    fi
-}
-
 function _component_machine {
     function _pwd {
         if [[ "$PWD" == "$HOME" ]]; then
@@ -44,7 +38,6 @@ set -o promptsubst
 prompt='''\
 $(_component_machine)\
 $(_component_vcs)
-$(_component_ssh)\
 $(_component_exit_code)\
 $(_component_symbol)\
 '''
