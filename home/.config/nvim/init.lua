@@ -108,6 +108,7 @@ local function float_window(winid, opts)
   }, opts)
   local float = vim.api.nvim_open_win(vim.api.nvim_win_get_buf(winid), 1, opts)
   vim.api.nvim_win_close(winid, true)
+  vim.cmd.wincmd("=")
   return float
 end
 
