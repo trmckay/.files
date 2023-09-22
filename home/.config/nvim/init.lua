@@ -1,4 +1,9 @@
 local plugins = {
+  { "hrsh7th/cmp-buffer" },
+  { "hrsh7th/cmp-nvim-lsp" },
+  { "hrsh7th/cmp-nvim-lua" },
+  { "hrsh7th/cmp-path" },
+  { "hrsh7th/nvim-cmp" },
   { "kevinhwang91/nvim-ufo" },
   { "kevinhwang91/promise-async" },
   { "lewis6991/gitsigns.nvim" },
@@ -77,6 +82,17 @@ local function command(...)
   return out:gsub("%s*$", ""), vim.v.shell_error
 end
 
+local function disable_text_edit_ui()
+  vim.opt_local.cursorline = false
+  vim.opt_local.number = false
+  vim.opt_local.list = false
+end
+
+local function on_term_open()
+  disable_text_edit_ui()
+  vim.opt_local.winbar = nil
+end
+
 local function float_window(winid, opts)
   opts = opts or {}
   local ui = vim.api.nvim_list_uis()[1]
@@ -113,6 +129,11 @@ local function list_flatmap(func, list)
   return rettab
 end
 
+local function set_local_tab_width(width)
+    vim.opt_local.shiftwidth = width
+    vim.opt_local.softtabstop = width
+end
+
 local function map(mode, lhs, rhs, desc, opts)
   local merged_opts = vim.tbl_deep_extend(
     "force",
@@ -146,29 +167,18 @@ local function git_modified_files()
   return {}
 end
 
-local function set_local_tab_width(width)
-    vim.opt_local.shiftwidth = width
-    vim.opt_local.softtabstop = width
-end
-
 local lsp_install_path = vim.fn.stdpath "data" .. "/lsp"
 
 local lsp_servers = { "lua_ls", "clangd", "pyright", "rnix" }
-
-if vim.env.NVIM_LSP_SERVERS ~= nil then
-  if vim.env.NVIM_LSP_SERVERS:lower() == "none" then
-    lsp_servers = {}
-  elseif vim.env.NVIM_LSP_SERVERS then
-    local requested_servers = vim.split(vim.env.NVIM_LSP_SERVERS, ",")
-    lsp_servers = vim.tbl_filter(
-      function(server) return vim.tbl_contains(requested_servers, server) end,
-      lsp_servers
-    )
-  end
+if vim.env.NVIM_LSP_SERVERS then
+  local requested_servers = vim.split(vim.env.NVIM_LSP_SERVERS, ",")
+  lsp_servers = vim.tbl_filter(
+    function(server) return vim.tbl_contains(requested_servers, server) end,
+    lsp_servers
+  )
 end
 
 vim.o.cmdheight = 1
-vim.o.completeopt = "menu,menuone,noselect"
 vim.o.cursorline = true
 vim.o.expandtab = true
 vim.o.foldcolumn = "0"
@@ -207,8 +217,12 @@ end
 local ft_overrides = {
   lua = with(set_local_tab_width, { 2 }),
   nix = with(set_local_tab_width, { 2 }),
+  scala = with(set_local_tab_width, { 2 }),
   text = function() vim.opt_local.wrap = true end,
   markdown = function() vim.opt_local.wrap = true end,
+  fugitive = disable_text_edit_ui,
+  git = disable_text_edit_ui,
+  lir = disable_text_edit_ui,
 }
 
 for ft, cfg in pairs(ft_overrides) do
@@ -235,7 +249,7 @@ nmap("<C-o>", "<C-o>zz")
 nmap("<C-i>", "<C-i>zz")
 nmap("gg", "ggzz")
 nmap("G", "Gzz")
-nmap("<leader>r", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/g<Left><Left>]])
+nmap("<leader>r", [[:%s/<C-r><C-w>/<C-r><C-w>/g<Left><Left>]])
 
 nmap(
   "<leader>ow",
@@ -327,6 +341,13 @@ nmap("<leader>bs", function()
   vim.api.nvim_win_set_buf(0, bufnr)
 end, "Open scratch file")
 
+vim.api.nvim_create_autocmd("BufEnter", {
+  group = init_augroup,
+  callback = function()
+    if vim.bo.buftype == "nofile" then disable_text_edit_ui() end
+  end,
+})
+
 vim.api.nvim_create_autocmd({ "VimResized", "VimResume" }, {
   group = init_augroup,
   callback = function() vim.cmd.wincmd "=" end,
@@ -339,6 +360,22 @@ vim.api.nvim_create_user_command("Filter", function(opts)
   end
   vim.cmd(string.format("%%!%s", opts.args))
 end, { nargs = "+", complete = "shellcmd" })
+
+vim.api.nvim_create_user_command("HexDump", function(_)
+  if vim.bo.buftype ~= "" then
+    vim.notify("Not a file", vim.log.levels.ERROR)
+    return
+  end
+  local path = vim.api.nvim_buf_get_name(0)
+  local bufnr = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_buf_call(bufnr, function()
+    vim.cmd(string.format("r !xxd %s", path))
+    vim.bo[bufnr].ft = "xxd"
+    vim.bo[bufnr].modifiable = false
+  end)
+  vim.cmd.split()
+  vim.api.nvim_win_set_buf(0, bufnr)
+end, { nargs = 0 })
 
 if vim.fn.executable "rg" == 1 then
   vim.o.grepprg = [[rg --vimgrep --no-heading]]
@@ -486,6 +523,11 @@ nmap(
   "New terminal in a tab"
 )
 
+vim.api.nvim_create_autocmd("TermOpen", {
+  group = init_augroup,
+  callback = on_term_open,
+})
+
 local function update_tmux_env()
   if not vim.env.TMUX then return end
   for _, line in
@@ -529,8 +571,6 @@ nmap("<C-q>", "<cmd>quit<cr>", "Close window")
 nmap("<leader>Q", "<cmd>quitall<cr>", "Close all windows")
 
 local function lsp_on_attach(client, bufnr)
-  vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
-
   nmap(
     "<F2>",
     vim.lsp.buf.rename,
@@ -719,6 +759,61 @@ map(
   "Convert base from decimal"
 )
 map({ "n", "v" }, "<C-b>", require("based").convert, "Convert base")
+
+map({ "i", "s", "n" }, "<C-k>", function()
+  if require("cmp").get_selected_entry() ~= nil then
+    require("cmp").confirm {
+      behavior = require("cmp").ConfirmBehavior.Replace,
+      select = false,
+    }
+  end
+end)
+
+vim.o.completeopt = "menu,menuone,noselect"
+
+require("cmp").setup {
+  enabled = function()
+    return (vim.bo.buftype ~= "prompt")
+      and not (
+        require("cmp.config.context").in_treesitter_capture "comment"
+        and not require("cmp.config.context").in_syntax_group "Comment"
+      )
+  end,
+  mapping = {
+    ["<C-b>"] = require("cmp").mapping.scroll_docs(-4),
+    ["<C-f>"] = require("cmp").mapping.scroll_docs(4),
+    ["<C-n>"] = require("cmp").mapping.select_next_item {
+      behavior = require("cmp").SelectBehavior.Select,
+    },
+    ["<C-p>"] = require("cmp").mapping.select_prev_item {
+      behavior = require("cmp").SelectBehavior.Select,
+    },
+    ["<C-e>"] = require("cmp").mapping.confirm {
+      behavior = require("cmp").ConfirmBehavior.Replace,
+      select = true,
+    },
+    ["<CR>"] = require("cmp").mapping.confirm {
+      behavior = require("cmp").ConfirmBehavior.Insert,
+      select = false,
+    },
+  },
+  sources = require("cmp").config.sources {
+    { name = "nvim_lua" },
+    { name = "nvim_lsp" },
+    { name = "path" },
+    {
+      name = "buffer",
+      keyword_length = 2,
+      max_item_count = 5,
+    },
+  },
+  window = {
+    documentation = {
+      border = border_style,
+    },
+  },
+  preselect = require("cmp").PreselectMode.None,
+}
 
 require("Comment").setup {
   toggler = {
@@ -1009,12 +1104,18 @@ require("lir").setup {
   hide_cursor = false,
 }
 
+local lsp_capabilities = vim.tbl_deep_extend(
+  "force",
+  vim.lsp.protocol.make_client_capabilities(),
+  require("cmp_nvim_lsp").default_capabilities()
+)
+
 local lsp_config = {
   on_attach = lsp_on_attach,
   flags = {
     debounce_text_changes = 1000,
   },
-  capabilities = vim.lsp.protocol.make_client_capabilities(),
+  capabilities = lsp_capabilities,
   settings = {
     Lua = {
       diagnostics = {
@@ -1102,6 +1203,19 @@ require("rust-tools").setup {
   server = {
     on_attach = function(client, bufnr)
       lsp_on_attach(client, bufnr)
+
+      nmap(
+        "<leader>rr",
+        require("rust-tools").runnables.runnables,
+        "Rust: show runnables",
+        { buffer = bufnr }
+      )
+      nmap(
+        "<leader>rd",
+        require("rust-tools").debuggables.debuggables,
+        "Rust: show debuggables",
+        { buffer = bufnr }
+      )
       nmap(
         "K",
         require("rust-tools").hover_actions.hover_actions,
