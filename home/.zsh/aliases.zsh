@@ -58,25 +58,10 @@ else
 fi
 
 if command_exists nvim; then
-    function nvim-safe {
-        if [[ -z $NVIM ]]; then
-            nvim "$@"
-        else
-            echo "Refusing to nest nvim"
-        fi
-    }
-    compdef _vim nvim-safe
-    alias v='nvim-safe'
-    alias vi='nvim-safe'
-    alias vim='nvim-safe'
-    alias nvim='nvim-safe'
-    alias gv='nvim-safe +Git +only'
-
-    if command_exists nix; then
-        function nvim-cfg {
-            env NVIM_LOCKFILE="$2" nvim -u "$1" "$1"
-        }
-    fi
+    alias v='nvim'
+    alias vi='nvim'
+    alias vim='nvim'
+    alias gv='nvim +Git +only'
 fi
 
 if command_exists bat; then

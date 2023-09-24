@@ -31,7 +31,8 @@ local plugins = {
   { "tpope/vim-surround" },
   { "trmckay/based.nvim" },
   { "windwp/nvim-autopairs" },
-  { "EdenEast/nightfox.nvim" }
+  { "EdenEast/nightfox.nvim" },
+  { "samjwill/nvim-unception" },
 }
 
 local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
