@@ -581,7 +581,7 @@ local function lsp_on_attach(client, bufnr)
   )
   nmap("K", vim.lsp.buf.hover, "LSP: hover actions", { buffer = bufnr })
   nmap("<C-c>", vim.lsp.buf.code_action, "LSP: code action", { buffer = bufnr })
-  nmap("<C-s>", vim.lsp.buf.signature_help, "LSP: signature_help", { buffer = bufnr })
+  map({"i", "n"}, "<C-s>", vim.lsp.buf.signature_help, "LSP: signature_help", { buffer = bufnr })
 
   nmap(
     "gd",
@@ -662,25 +662,40 @@ require("nightfox").setup {
   }
 }
 
-vim.cmd.colorscheme "terafox"
+local colorscheme = "terafox"
+
+if vim.env.NVIM_BACKGROUND == "light" then
+  colorscheme = "dawnfox"
+end
+
+vim.cmd.colorscheme(colorscheme)
+
+nmap("<leader>C", function()
+  if colorscheme == "terafox" then
+    colorscheme = "dawnfox"
+  else
+    colorscheme = "terafox"
+  end
+  vim.cmd.colorscheme(colorscheme)
+end)
 
 local function mkline(sections, opts)
   opts = opts or {}
   return function(e)
-    local l = string.format(" %s ", table.concat(
+    local l = table.concat(
       list_flatmap(function(section)
         return table.concat(
-          list_flatmap(function(c)
-            if type(c) == "function" then
-              return c(e)
-            end
-            return c
-          end, section),
-          opts.separator or "  "
+        list_flatmap(function(c)
+          if type(c) == "function" then
+            return c(e)
+          end
+          return c
+        end, section),
+        opts.separator or "  "
         )
       end, sections),
       "%="
-    ))
+    )
     return (opts.line_formatter or function(i) return i end)(l)
   end
 end
@@ -1428,6 +1443,12 @@ vim.api.nvim_create_autocmd("BufRead", {
     if ts_disable_large_buf(nil, 0) then vim.cmd.TSContextDisable() end
   end,
 })
+
+require("treesitter-context").setup {
+  enable = false,
+}
+
+nmap("<leader>oc", vim.cmd.TSContextToggle)
 
 nmap("zR", require("ufo").openAllFolds, "Open all folds")
 nmap("zM", require("ufo").closeAllFolds, "Close all folds")

@@ -15,6 +15,7 @@
     recurseSubmodules = no
 
 [alias]
+    a = add
     b = branch
     bd = branch -D
     c = commit
@@ -23,9 +24,12 @@
     cp = cherry-pick
     cpa = cherry-pick --abort
     cpc = cherry-pick --continue
+    ctx = !git slog | head
     d = diff
     f = fetch
-    ll = log --pretty=format:'%C(red)%h%Creset -%C(yellow)%d%Creset %s %C(green)(%cr) %C(yellow)<%an>%Creset'
+    llog = log --pretty=format:'%C(red)%h%Creset -%C(yellow)%d%Creset %s %C(green)(%cr) %C(yellow)<%an>%Creset' --color=always
+    slog = log --first-parent --pretty=format:'%C(red)%h%Creset -%C(yellow)%d%Creset %s %C(green)(%cr) %C(yellow)<%an>%Creset' --color=always
+    alog = log --first-parent --pretty=format:'%C(red)%h%Creset -%C(yellow)%d%Creset %s %C(green)(%cr)' --color=always --author='Trevor McKay'
     m = merge
     ma = merge --abort
     mc = merge --continue
@@ -36,9 +40,15 @@
     rbc = rebase --continue
     rbi = rebase -i
     root = rev-parse --show-toplevel
-    s = show
     publish = !git push -u origin `git symbolic-ref HEAD | sed -e "s#^refs/heads/##"`
     reset-last-head = reset HEAD@{1}
+    rh = reset --hard
+    rs = restore
+    rho = !git reset --hard origin/`git rev-parse --abbrev-ref HEAD`
+    st = status
+    ss = stash
+    sa = stash apply
+    sp = stash pop
 
 [filter "lfs"]
     clean = git-lfs clean -- %f
@@ -54,19 +64,6 @@
 
 [init]
     defaultBranch = main
-
-[interactive]
-    diffFilter = delta --color-only
-
-[delta]
-    features = side-by-side line-numbers decorations
-    whitespace-error-style = 22 reverse
-    light = false
-
-[delta "decorations"]
-    commit-decoration-style = bold yellow box ul
-    file-style = bold yellow ul
-    file-decoration-style = none
 
 [merge]
     tool = fugitive

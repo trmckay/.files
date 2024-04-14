@@ -15,8 +15,8 @@ function _component_machine {
 }
 
 autoload -Uz vcs_info
-zstyle ':vcs_info:*' formats '%F{white}(%F{red}%b%f%F{white})%f '
-zstyle ':vcs_info:*' actionformats '%F{white}(%F{red}%b %a%f%F{white})%f '
+zstyle ':vcs_info:*' formats '%F{gray}(%F{red}%b%f%F{gray})%f '
+zstyle ':vcs_info:*' actionformats '%F{gray}(%F{red}%b %a%f%F{gray})%f '
 function _component_vcs {
     echo "$vcs_info_msg_0_"
 }

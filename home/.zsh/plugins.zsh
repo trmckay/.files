@@ -36,27 +36,13 @@ function source_https {
 }
 
 source_git \
-    "https://github.com/mdumitru/git-aliases" \
-    "c4cfe2cf5cf59a3da6bf3b735a20921a2c06c58d" \
-    "git-aliases.zsh"
-
-source_git \
     "https://github.com/zsh-users/zsh-completions" \
     "820aaba911fce0594bf17f0e9a82092a6af7810e"
-
-source_git \
-    "https://github.com/zsh-users/zsh-syntax-highlighting" \
-    "754cefe0181a7acd42fdcb357a67d0217291ac47"
-
-source_git \
-    "https://github.com/zsh-users/zsh-autosuggestions" \
-    "a411ef3e0992d4839f0732ebeb9823024afaaaa8"
-
-source_git \
-    "https://github.com/chisui/zsh-nix-shell" \
-    "1834762686241fb3a842d179f1a0712cffa8f7d3" \
-    "nix-shell.plugin.zsh"
 
 source_https \
     "https://raw.githubusercontent.com/junegunn/fzf/4603d540c3ae648c9e2ef84f33433b275290aa7c/shell/key-bindings.zsh" \
     "55572091278e4d64adda88e5ab7f15b6217bf6ce31b6f61d54179f4c3d634010"
+
+source_git \
+    "https://github.com/zsh-users/zsh-syntax-highlighting" \
+    "754cefe0181a7acd42fdcb357a67d0217291ac47"

@@ -4,6 +4,7 @@ alias e='$EDITOR'
 alias mkdir='mkdir -p'
 alias cdiff='diff --color=always'
 alias cless='less -R'
+alias g='git'
 
 function cplink {
     dest="$(readlink "$1")"
@@ -75,6 +76,12 @@ if command_exists exa; then
     alias ll='exa -lbFgUh --octal-permissions --time-style=long-iso'
     alias lla='exa -albFgUh --octal-permissions --time-style=long-iso'
     alias tree='exa --tree'
+else
+    alias ls='ls --color=auto -lhF'
+    alias la='ls -a'
+    alias ll='ls --full-time'
+    alias lla='ls -a --full-time'
+    alias lsp='ls --color=always | less -R'
 fi
 
 if command_exists zoxide; then
