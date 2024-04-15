@@ -18,6 +18,16 @@
     a = add
     b = branch
     bd = branch -D
+    local-main-branch = !git branch | cut -c 3- | grep -E '^master$|^main$'
+    remote-branch = rev-parse --abbrev-ref --symbolic-full-name @{upstream}
+    main-branch = !git rev-parse --abbrev-ref --symbolic-full-name $(git local-main-branch)@{upstream}
+    merge-base-to-main-branch = !git merge-base HEAD $(git main-branch)
+    diff-remote = !git diff `git remote-branch`
+    dr = diff-remote
+    log-to-remote = !git log HEAD..`git remote-branch`
+    ltr = log-to-remote
+    log-from-remote = !git log `git remote-branch`..HEAD
+    lfr = log-from-remote
     c = commit
     ca = commit --amend
     co = checkout
@@ -26,6 +36,7 @@
     cpc = cherry-pick --continue
     ctx = !git slog | head
     d = diff
+    dm = !git diff $(git merge-base HEAD $(git merge-base-to-main-branch))
     f = fetch
     llog = log --pretty=format:'%C(red)%h%Creset -%C(yellow)%d%Creset %s %C(green)(%cr) %C(yellow)<%an>%Creset' --color=always
     slog = log --first-parent --pretty=format:'%C(red)%h%Creset -%C(yellow)%d%Creset %s %C(green)(%cr) %C(yellow)<%an>%Creset' --color=always
