@@ -1,9 +1,5 @@
 local plugins = {
-  { "hrsh7th/cmp-buffer" },
-  { "hrsh7th/cmp-nvim-lsp" },
-  { "hrsh7th/cmp-nvim-lua" },
-  { "hrsh7th/cmp-path" },
-  { "hrsh7th/nvim-cmp" },
+  { 'echasnovski/mini.completion', version = '*' },
   { "kevinhwang91/nvim-ufo" },
   { "kevinhwang91/promise-async" },
   { "lewis6991/gitsigns.nvim" },
@@ -22,7 +18,6 @@ local plugins = {
   { "romainl/vim-qf" },
   { "ruifm/gitlinker.nvim" },
   { "scalameta/nvim-metals" },
-  { "simrat39/rust-tools.nvim" },
   { "tamago324/lir.nvim" },
   { "tpope/vim-eunuch" },
   { "tpope/vim-fugitive" },
@@ -171,7 +166,7 @@ end
 
 local lsp_install_path = vim.fn.stdpath "data" .. "/lsp"
 
-local lsp_servers = { "lua_ls", "clangd", "pyright", "rnix" }
+local lsp_servers = { "lua_ls", "clangd", "pyright", "rust_analyzer" }
 if vim.env.NVIM_LSP_SERVERS then
   local requested_servers = vim.split(vim.env.NVIM_LSP_SERVERS, ",")
   lsp_servers = vim.tbl_filter(
@@ -777,60 +772,9 @@ map(
 )
 map({ "n", "v" }, "<C-b>", require("based").convert, "Convert base")
 
-map({ "i", "s", "n" }, "<C-k>", function()
-  if require("cmp").get_selected_entry() ~= nil then
-    require("cmp").confirm {
-      behavior = require("cmp").ConfirmBehavior.Replace,
-      select = false,
-    }
-  end
-end)
-
 vim.o.completeopt = "menu,menuone,noselect"
 
-require("cmp").setup {
-  enabled = function()
-    return (vim.bo.buftype ~= "prompt")
-      and not (
-        require("cmp.config.context").in_treesitter_capture "comment"
-        and not require("cmp.config.context").in_syntax_group "Comment"
-      )
-  end,
-  mapping = {
-    ["<C-b>"] = require("cmp").mapping.scroll_docs(-4),
-    ["<C-f>"] = require("cmp").mapping.scroll_docs(4),
-    ["<C-n>"] = require("cmp").mapping.select_next_item {
-      behavior = require("cmp").SelectBehavior.Select,
-    },
-    ["<C-p>"] = require("cmp").mapping.select_prev_item {
-      behavior = require("cmp").SelectBehavior.Select,
-    },
-    ["<C-e>"] = require("cmp").mapping.confirm {
-      behavior = require("cmp").ConfirmBehavior.Replace,
-      select = true,
-    },
-    ["<CR>"] = require("cmp").mapping.confirm {
-      behavior = require("cmp").ConfirmBehavior.Insert,
-      select = false,
-    },
-  },
-  sources = require("cmp").config.sources {
-    { name = "nvim_lua" },
-    { name = "nvim_lsp" },
-    { name = "path" },
-    {
-      name = "buffer",
-      keyword_length = 2,
-      max_item_count = 5,
-    },
-  },
-  window = {
-    documentation = {
-      border = border_style,
-    },
-  },
-  preselect = require("cmp").PreselectMode.None,
-}
+require('mini.completion').setup()
 
 require("Comment").setup {
   toggler = {
@@ -1121,11 +1065,7 @@ require("lir").setup {
   hide_cursor = false,
 }
 
-local lsp_capabilities = vim.tbl_deep_extend(
-  "force",
-  vim.lsp.protocol.make_client_capabilities(),
-  require("cmp_nvim_lsp").default_capabilities()
-)
+local lsp_capabilities = vim.lsp.protocol.make_client_capabilities()
 
 local lsp_config = {
   on_attach = lsp_on_attach,
@@ -1204,69 +1144,6 @@ vim.api.nvim_create_autocmd("FileType", {
   callback = with(require("metals").initialize_or_attach, { metals_config }),
   group = init_augroup,
 })
-
-require("rust-tools").setup {
-  tools = {
-    inlay_hints = {
-      only_current_line = true,
-    },
-    crate_graph = {
-      backend = "png",
-    },
-    hover_actions = {
-      border = border_style,
-    },
-  },
-  server = {
-    on_attach = function(client, bufnr)
-      lsp_on_attach(client, bufnr)
-
-      nmap(
-        "<leader>rr",
-        require("rust-tools").runnables.runnables,
-        "Rust: show runnables",
-        { buffer = bufnr }
-      )
-      nmap(
-        "<leader>rd",
-        require("rust-tools").debuggables.debuggables,
-        "Rust: show debuggables",
-        { buffer = bufnr }
-      )
-      nmap(
-        "K",
-        require("rust-tools").hover_actions.hover_actions,
-        "LSP: hover actions",
-        { buffer = bufnr }
-      )
-      nmap(
-        "<leader>Rc",
-        require("rust-tools").open_cargo_toml.open_cargo_toml,
-        "Rust: open cargo.toml",
-        { buffer = bufnr }
-      )
-      nmap(
-        "<leader>Rm",
-        require("rust-tools").parent_module.parent_module,
-        "Rust: open parent module",
-        { buffer = bufnr }
-      )
-      nmap(
-        "<leader>Re",
-        require("rust-tools").expand_macro.expand_macro,
-        "Rust: expand macro",
-        { buffer = bufnr }
-      )
-    end,
-    settings = {
-      ["rust-analyzer"] = {
-        checkOnSave = {
-          command = "clippy",
-        },
-      },
-    },
-  },
-}
 
 nmap("]q", "<Plug>(qf_qf_next)", "Next in quickfix list")
 nmap("[q", "<Plug>(qf_qf_previous)", "Previous in quickfix list")
