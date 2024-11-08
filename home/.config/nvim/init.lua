@@ -246,7 +246,7 @@ nmap("<C-o>", "<C-o>zz")
 nmap("<C-i>", "<C-i>zz")
 nmap("gg", "ggzz")
 nmap("G", "Gzz")
-nmap("<leader>r", [[:%s/<C-r><C-w>/<C-r><C-w>/g<Left><Left>]])
+nmap("<leader>r", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gc<Left><Left><Left>]])
 
 nmap(
   "<leader>ow",
