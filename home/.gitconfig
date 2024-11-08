@@ -8,58 +8,39 @@
 [core]
     pager = delta
 
+[commit]
+    verbose = true
+
 [pull]
-    rebase = false
+    rebase = true
 
 [fetch]
     recurseSubmodules = no
 
-[alias]
-    a = add
-    b = branch
-    bd = branch -D
-    local-main-branch = !git branch | cut -c 3- | grep -E '^master$|^main$'
-    remote-branch = rev-parse --abbrev-ref --symbolic-full-name @{upstream}
-    main-branch = !git rev-parse --abbrev-ref --symbolic-full-name $(git local-main-branch)@{upstream}
-    merge-base-to-main-branch = !git merge-base HEAD $(git main-branch)
-    diff-remote = !git diff `git remote-branch`
-    dr = diff-remote
-    log-to-remote = !git log HEAD..`git remote-branch`
-    ltr = log-to-remote
-    log-from-remote = !git log `git remote-branch`..HEAD
-    lfr = log-from-remote
-    c = commit
-    ca = commit --amend
-    co = checkout
-    cp = cherry-pick
-    cpa = cherry-pick --abort
-    cpc = cherry-pick --continue
-    ctx = !git slog | head
-    d = diff
-    dm = !git diff $(git merge-base HEAD $(git merge-base-to-main-branch))
-    f = fetch
-    llog = log --pretty=format:'%C(red)%h%Creset -%C(yellow)%d%Creset %s %C(green)(%cr) %C(yellow)<%an>%Creset' --color=always
-    slog = log --first-parent --pretty=format:'%C(red)%h%Creset -%C(yellow)%d%Creset %s %C(green)(%cr) %C(yellow)<%an>%Creset' --color=always
-    alog = log --first-parent --pretty=format:'%C(red)%h%Creset -%C(yellow)%d%Creset %s %C(green)(%cr)' --color=always --author='Trevor McKay'
-    m = merge
-    ma = merge --abort
-    mc = merge --continue
-    p = push
-    pf = push --force-with-lease
-    rb = rebase
-    rba = rebase --abort
-    rbc = rebase --continue
-    rbi = rebase -i
-    root = rev-parse --show-toplevel
-    publish = !git push -u origin `git symbolic-ref HEAD | sed -e "s#^refs/heads/##"`
-    reset-last-head = reset HEAD@{1}
-    rh = reset --hard
-    rs = restore
-    rho = !git reset --hard origin/`git rev-parse --abbrev-ref HEAD`
-    st = status
-    ss = stash
-    sa = stash apply
-    sp = stash pop
+[rebase]
+    autosquash = true
+    autostash = true
+
+[rerere]
+    enabled = true
+
+[diff]
+    ignoreSubmodules = all
+    algorithm = histogram
+
+[init]
+    defaultBranch = main
+
+[push]
+    default = current
+    autoSetupRemote = true
+
+[merge]
+    tool = fugitive
+    # conflictstyle = zdiff3
+
+[mergetool "fugitive"]
+    cmd = nvim -f -c \"Gvdiffsplit!\" \"$MERGED\"
 
 [filter "lfs"]
     clean = git-lfs clean -- %f
@@ -67,17 +48,55 @@
     process = git-lfs filter-process
     required = true
 
-[rerere]
-    enabled = true
-
-[diff]
-    ignoreSubmodules = all
-
-[init]
-    defaultBranch = main
-
-[merge]
-    tool = fugitive
-
-[mergetool "fugitive"]
-    cmd = nvim -f -c \"Gvdiffsplit!\" \"$MERGED\"
+[alias]
+    a = add
+    alog = log --first-parent --pretty=format:'%C(red)%h%Creset -%C(yellow)%d%Creset %s %C(green)(%cr)' --author='Trevor McKay'
+    b = branch
+    bd = branch -D
+    c = commit
+    ca = commit --amend
+    cob = checkout -b
+    co = checkout
+    cp = cherry-pick
+    cpa = cherry-pick --abort
+    cpc = cherry-pick --continue
+    ctx = !git slog | head
+    d = diff
+    diff-main-branch = !git diff $(git main-branch)...HEAD
+    diff-remote = !git diff $(git remote-branch)
+    dm = diff-main-branch
+    dr = diff-remote
+    f = fetch
+    llog = log --pretty=format:'%C(red)%h%Creset -%C(yellow)%d%Creset %s %C(green)(%cr) %C(yellow)<%an>%Creset'
+    local-main-branch = !git branch | cut -c 3- | grep -E '^master$|^main$'
+    ltr = log-to-remote
+    m = merge
+    ma = merge --abort
+    main-branch = !git rev-parse --abbrev-ref --symbolic-full-name $(git local-main-branch)@{upstream}
+    mb = main-branch
+    mbm = merge-base-main-branch
+    mc = merge --continue
+    merge-base-main-branch = !git merge-base HEAD $(git main-branch)
+    mm = !git fetch && git merge $(git main-branch)
+    nb = checkout -b
+    p = push
+    pf = push --force-with-lease
+    rb = rebase
+    rba = rebase --abort
+    rbc = rebase --continue
+    rbi = rebase -i
+    rbim = !git fetch && git rebase -i $(git main-branch)
+    rbm = !git fetch && git rebase -i $(git main-branch)
+    remote-branch = rev-parse --abbrev-ref --symbolic-full-name @{upstream}
+    reset-last-head = reset HEAD@{1}
+    rfl = reflog --date=iso
+    rh = reset --hard
+    rhu = !git reset --hard $(git remote-branch)
+    root = rev-parse --show-toplevel
+    rs = restore
+    s = status
+    sa = stash apply
+    slog = log --first-parent --pretty=format:'%C(red)%h%Creset -%C(yellow)%d%Creset %s %C(green)(%cr) %C(yellow)<%an>%Creset'
+    sp = stash pop
+    ss = stash
+    v = !nvim +Git +only
