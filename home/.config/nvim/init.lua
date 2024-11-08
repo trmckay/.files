@@ -774,7 +774,9 @@ map({ "n", "v" }, "<C-b>", require("based").convert, "Convert base")
 
 vim.o.completeopt = "menu,menuone,noselect"
 
-require('mini.completion').setup()
+require('mini.completion').setup {
+  delay = { completion = 100, info = 100, signature = 10^7 },
+}
 
 require("Comment").setup {
   toggler = {
