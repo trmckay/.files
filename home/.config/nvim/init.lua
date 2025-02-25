@@ -1,73 +1,4 @@
-local plugins = {
-  { 'echasnovski/mini.completion', version = '*' },
-  { "kevinhwang91/nvim-ufo" },
-  { "kevinhwang91/promise-async" },
-  { "lewis6991/gitsigns.nvim" },
-  { "mrjones2014/smart-splits.nvim" },
-  { "neovim/nvim-lspconfig" },
-  { "numToStr/Comment.nvim" },
-  { "nvim-lua/plenary.nvim" },
-  { "nvim-telescope/telescope.nvim" },
-  { "nvim-telescope/telescope-ui-select.nvim" },
-  { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
-  {
-    "nvim-treesitter/nvim-treesitter",
-    build = function(_) vim.cmd.TSUpdate() end,
-  },
-  { "nvim-treesitter/nvim-treesitter-context" },
-  { "romainl/vim-qf" },
-  { "ruifm/gitlinker.nvim" },
-  { "scalameta/nvim-metals" },
-  { "tamago324/lir.nvim" },
-  { "tpope/vim-eunuch" },
-  { "tpope/vim-fugitive" },
-  { "tpope/vim-repeat" },
-  { "tpope/vim-rsi" },
-  { "tpope/vim-surround" },
-  { "trmckay/based.nvim" },
-  { "windwp/nvim-autopairs" },
-  { "EdenEast/nightfox.nvim" },
-  { "samjwill/nvim-unception" },
-}
-
-local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system {
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable",
-    lazypath,
-  }
-end
-vim.opt.rtp:prepend(lazypath)
-
-require("lazy").setup(plugins, {
-  lockfile = vim.env.NVIM_LOCKFILE or vim.fn.stdpath("config") .. "/lazy-lock.json",
-  ui = {
-    icons = {
-      cmd = "⌘",
-      config = "🛠",
-      event = "📅",
-      ft = "📂",
-      init = "⚙",
-      keys = "🗝",
-      plugin = "🔌",
-      runtime = "💻",
-      source = "📄",
-      start = "🚀",
-      task = "📌",
-      lazy = "💤 ",
-    },
-  },
-})
-
-local init_augroup = vim.api.nvim_create_augroup("UserConfig", { clear = true })
-
-local border_style = "single"
-
-vim.g.mapleader = " "
+---- utilities ----
 
 local function with(fn, args)
   return function() fn(unpack(args)) end
@@ -88,6 +19,8 @@ local function on_term_open()
   disable_text_edit_ui()
   vim.opt_local.winbar = nil
 end
+
+local border_style = "single"
 
 local function float_window(winid, opts)
   opts = opts or {}
@@ -164,16 +97,103 @@ local function git_modified_files()
   return {}
 end
 
-local lsp_install_path = vim.fn.stdpath "data" .. "/lsp"
+---- plugins ----
 
-local lsp_servers = { "lua_ls", "clangd", "pyright", "rust_analyzer" }
-if vim.env.NVIM_LSP_SERVERS then
-  local requested_servers = vim.split(vim.env.NVIM_LSP_SERVERS, ",")
-  lsp_servers = vim.tbl_filter(
-    function(server) return vim.tbl_contains(requested_servers, server) end,
-    lsp_servers
-  )
+local plugins = {
+  {
+    "tinted-theming/tinted-vim",
+    lazy = false,
+  },
+  { 'echasnovski/mini.completion', version = '*' },
+  { "kevinhwang91/nvim-ufo" },
+  { "kevinhwang91/promise-async" },
+  { "lewis6991/gitsigns.nvim" },
+  { "mrjones2014/smart-splits.nvim", tag = "v1.3.0" },
+  { "neovim/nvim-lspconfig" },
+  { "numToStr/Comment.nvim" },
+  {
+    "hrsh7th/nvim-cmp",
+    dependencies = {
+      "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-buffer",
+      "hrsh7th/cmp-path",
+    },
+  },
+  { "nvim-lua/plenary.nvim" },
+  { "nvim-telescope/telescope.nvim" },
+  { "nvim-telescope/telescope-ui-select.nvim" },
+  { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+  {
+    "nvim-treesitter/nvim-treesitter",
+    build = function(_) vim.cmd.TSUpdate() end,
+  },
+  { "nvim-treesitter/nvim-treesitter-context" },
+  { "romainl/vim-qf" },
+  { "ruifm/gitlinker.nvim" },
+  { "scalameta/nvim-metals" },
+  { "tamago324/lir.nvim" },
+  { "tpope/vim-eunuch" },
+  { "tpope/vim-fugitive" },
+  { "tpope/vim-repeat" },
+  { "tpope/vim-rsi" },
+  { "tpope/vim-surround" },
+  {
+    "windwp/nvim-autopairs",
+    opts = {},
+  },
+  { "samjwill/nvim-unception" },
+  {
+    "williamboman/mason.nvim",
+    opts = {},
+  },
+  {
+    "williamboman/mason-lspconfig.nvim",
+    opts = {},
+  },
+}
+
+local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system {
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable",
+    lazypath,
+  }
 end
+vim.opt.rtp:prepend(lazypath)
+
+require("lazy").setup(plugins, {
+  lockfile = vim.env.NVIM_LOCKFILE or vim.fn.stdpath("config") .. "/lazy-lock.json",
+  ui = {
+    icons = {
+      cmd = "",
+      config = "",
+      event = "",
+      ft = "",
+      init = "",
+      keys = "",
+      plugin = "",
+      runtime = "",
+      source = "",
+      start = "",
+      task = "",
+      lazy = " ",
+    },
+  },
+})
+
+---- configuration ----
+
+vim.opt.termguicolors = true
+vim.opt.background = "light"
+vim.cmd.colorscheme "base16-grayscale-light"
+
+local init_augroup = vim.api.nvim_create_augroup("UserConfig", { clear = true })
+
+vim.g.mapleader = " "
 
 vim.o.cmdheight = 1
 vim.o.cursorline = true
@@ -183,7 +203,8 @@ vim.o.foldenable = true
 vim.o.foldlevel = 99
 vim.o.foldlevelstart = 99
 vim.o.hidden = true
-vim.o.ignorecase = true
+vim.o.ignorecase = false
+vim.o.linebreak = true
 vim.o.list = true
 vim.o.mouse = "a"
 vim.o.number = true
@@ -207,7 +228,6 @@ vim.opt.listchars:append "trail:⋅"
 
 if vim.fn.has "nvim-0.9" == 1 then
   vim.o.diffopt = "linematch:60"
-  vim.o.splitkeep = "screen"
   vim.o.exrc = true
 end
 
@@ -636,44 +656,6 @@ local function lsp_on_attach(client, bufnr)
   nmap("<leader>bf", fmt, "Format buffer", { buffer = bufnr })
 end
 
-require("nightfox").setup {
-  options = {
-    styles = {
-      comments = "italic",
-      functions = "bold",
-    }
-  },
-  palettes = {
-    carbonfox = {
-      bg1 = "#101010"
-    }
-  },
-  groups = {
-    all = {
-      CursorLineNr = { link = "LineNr" },
-      CursorLine = { bg = "palette.bg2" },
-      WinSeparator = { fg = "palette.bg3" },
-    }
-  }
-}
-
-local colorscheme = "terafox"
-
-if vim.env.NVIM_BACKGROUND == "light" then
-  colorscheme = "dawnfox"
-end
-
-vim.cmd.colorscheme(colorscheme)
-
-nmap("<leader>C", function()
-  if colorscheme == "terafox" then
-    colorscheme = "dawnfox"
-  else
-    colorscheme = "terafox"
-  end
-  vim.cmd.colorscheme(colorscheme)
-end)
-
 local function mkline(sections, opts)
   opts = opts or {}
   return function(e)
@@ -757,20 +739,6 @@ vim.api.nvim_create_autocmd({ "VimEnter", "BufWinEnter" }, {
 })
 
 vim.o.laststatus = 3
-
-map(
-  { "n", "v" },
-  "<leader>nch",
-  with(require("based").convert, { "hex" }),
-  "Convert base from hex"
-)
-map(
-  { "n", "v" },
-  "<leader>ncd",
-  with(require("based").convert, { "dec" }),
-  "Convert base from decimal"
-)
-map({ "n", "v" }, "<C-b>", require("based").convert, "Convert base")
 
 vim.o.completeopt = "menu,menuone,noselect"
 
@@ -1067,14 +1035,15 @@ require("lir").setup {
   hide_cursor = false,
 }
 
-local lsp_capabilities = vim.lsp.protocol.make_client_capabilities()
+-- local lsp_capabilities = vim.lsp.protocol.make_client_capabilities()
+local cmp_capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 local lsp_config = {
   on_attach = lsp_on_attach,
   flags = {
     debounce_text_changes = 1000,
   },
-  capabilities = lsp_capabilities,
+  capabilities = cmp_capabilities,
   settings = {
     Lua = {
       diagnostics = {
@@ -1094,6 +1063,7 @@ local lsp_config = {
   },
 }
 
+local lsp_servers = { "lua_ls", "clangd", "pyright", "rust_analyzer" }
 for _, lsp in ipairs(lsp_servers) do
   require("lspconfig")[lsp].setup(lsp_config)
 end
@@ -1237,48 +1207,7 @@ local function ts_disable_large_buf(_, bufnr)
     > tonumber(vim.env.NVIM_TREESITTER_MAX_SIZE or 100000)
 end
 
-local ts_parsers = {
-  "bash",
-  "c",
-  "cpp",
-  "diff",
-  "dockerfile",
-  "git_rebase",
-  "gitattributes",
-  "gitcommit",
-  "vimdoc",
-  "html",
-  "java",
-  "javascript",
-  "json",
-  "latex",
-  "llvm",
-  "lua",
-  "markdown",
-  "perl",
-  "python",
-  "ruby",
-  "rust",
-  "scala",
-  "toml",
-  "verilog",
-  "vim",
-  "yaml",
-}
-
-if vim.fn.executable "tree-sitter" == 1 then
-  vim.list_extend(ts_parsers, {
-    "devicetree",
-    "gitignore",
-  })
-end
-
-if vim.env.NVIM_TREESITTER_PARSERS then
-  vim.list_extend(ts_parsers, vim.split(vim.env.NVIM_TREESITTER_PARSERS, ","))
-end
-
 require("nvim-treesitter.configs").setup {
-  ensure_installed = ts_parsers,
   auto_install = vim.fn.executable "tree-sitter" == 1,
   highlight = {
     enable = true,
@@ -1323,9 +1252,7 @@ vim.api.nvim_create_autocmd("BufRead", {
   end,
 })
 
-require("treesitter-context").setup {
-  enable = false,
-}
+require("treesitter-context").setup { enable = true }
 
 nmap("<leader>oc", vim.cmd.TSContextToggle)
 
@@ -1350,7 +1277,14 @@ nmap("<M-j>", require("smart-splits").resize_down)
 nmap("<M-k>", require("smart-splits").resize_up)
 nmap("<M-l>", require("smart-splits").resize_right)
 
-require("nvim-autopairs").setup {
-  disable_in_macro = true,
-  disable_in_visualblock = true,
-}
+local cmp = require("cmp")
+cmp.setup({
+  snippet = { expand = function(args) vim.snippet.expand(args.body) end },
+  mapping = cmp.mapping.preset.insert({
+    ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+    ["<C-f>"] = cmp.mapping.scroll_docs(4),
+    ["<C-n>"] = cmp.mapping.select_next_item(),
+    ["<C-p>"] = cmp.mapping.select_prev_item(),
+    ["<C-e>"] = cmp.mapping.confirm({ select = true }),
+  })
+})

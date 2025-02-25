@@ -3,6 +3,7 @@ source "$ZDOTDIR/lib.zsh"
 alias e='$EDITOR'
 alias mkdir='mkdir -p'
 alias cdiff='diff --color=always'
+alias diff='diff --color=auto'
 alias cless='less -R'
 alias g='git'
 
