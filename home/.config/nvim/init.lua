@@ -20,6 +20,16 @@ local function on_term_open()
   vim.opt_local.winbar = nil
 end
 
+local function file_exists(filename)
+  local fd = io.open(filename)
+  if fd ~= nil then
+    io.close(fd)
+    return true
+  else
+    return false
+  end
+end
+
 local border_style = "single"
 
 local function float_window(winid, opts)
@@ -60,8 +70,8 @@ local function list_flatmap(func, list)
 end
 
 local function set_local_tab_width(width)
-    vim.opt_local.shiftwidth = width
-    vim.opt_local.softtabstop = width
+  vim.opt_local.shiftwidth = width
+  vim.opt_local.softtabstop = width
 end
 
 local function map(mode, lhs, rhs, desc, opts)
@@ -74,7 +84,6 @@ local function map(mode, lhs, rhs, desc, opts)
 end
 
 local function nmap(lhs, rhs, desc, opts) map("n", lhs, rhs, desc, opts) end
-
 local function vmap(lhs, rhs, desc, opts) map("v", lhs, rhs, desc, opts) end
 
 local function in_git_repo()
@@ -92,7 +101,16 @@ end
 local function git_modified_files()
   if in_git_repo() then
     local out, _ = command { "git", "diff", "--name-only" }
-    if out then return vim.split(out, "\n") end
+    if out then
+      return list_flatmap(
+        function(f)
+          if f ~= "" then
+            return f
+          end
+        end,
+        vim.split(out, "\n")
+      )
+    end
   end
   return {}
 end
@@ -104,15 +122,31 @@ local plugins = {
     "tinted-theming/tinted-vim",
     lazy = false,
   },
-  { 'echasnovski/mini.completion', version = '*' },
-  { "kevinhwang91/nvim-ufo" },
-  { "kevinhwang91/promise-async" },
-  { "lewis6991/gitsigns.nvim" },
-  { "mrjones2014/smart-splits.nvim", tag = "v1.3.0" },
-  { "neovim/nvim-lspconfig" },
-  { "numToStr/Comment.nvim" },
+  {
+    "kevinhwang91/nvim-ufo",
+    event = "BufReadPost",
+    dependencies = { "kevinhwang91/promise-async" }
+  },
+  {
+    "lewis6991/gitsigns.nvim",
+    event = "BufReadPre"
+  },
+  {
+    "mrjones2014/smart-splits.nvim",
+    tag = "v1.3.0",
+    event = "VeryLazy"
+  },
+  {
+    "neovim/nvim-lspconfig",
+    event = "BufReadPre"
+  },
+  {
+    "numToStr/Comment.nvim",
+    event = "VeryLazy"
+  },
   {
     "hrsh7th/nvim-cmp",
+    event = "InsertEnter",
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-buffer",
@@ -120,34 +154,66 @@ local plugins = {
     },
   },
   { "nvim-lua/plenary.nvim" },
-  { "nvim-telescope/telescope.nvim" },
-  { "nvim-telescope/telescope-ui-select.nvim" },
-  { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+  {
+    "nvim-telescope/telescope.nvim",
+    cmd = "Telescope",
+    dependencies = {
+      "nvim-telescope/telescope-ui-select.nvim",
+      { "nvim-telescope/telescope-fzf-native.nvim", build = "make" }
+    }
+  },
   {
     "nvim-treesitter/nvim-treesitter",
     build = function(_) vim.cmd.TSUpdate() end,
+    event = "BufReadPost"
   },
-  { "nvim-treesitter/nvim-treesitter-context" },
-  { "romainl/vim-qf" },
-  { "ruifm/gitlinker.nvim" },
-  { "scalameta/nvim-metals" },
-  { "tamago324/lir.nvim" },
-  { "tpope/vim-eunuch" },
-  { "tpope/vim-fugitive" },
+  {
+    "nvim-treesitter/nvim-treesitter-context",
+    event = "BufReadPost"
+  },
+  {
+    "romainl/vim-qf",
+    event = "VeryLazy"
+  },
+  {
+    "ruifm/gitlinker.nvim",
+    event = "VeryLazy"
+  },
+  {
+    "scalameta/nvim-metals",
+    ft = { "scala", "sbt" }
+  },
+  {
+    "tamago324/lir.nvim",
+  },
+  {
+    "tpope/vim-eunuch",
+    cmd = { "Remove", "Delete", "Move", "Chmod", "Mkdir", "Rename", "SudoWrite" }
+  },
+  {
+    "tpope/vim-fugitive",
+    cmd = { "Git", "G" }
+  },
   { "tpope/vim-repeat" },
   { "tpope/vim-rsi" },
   { "tpope/vim-surround" },
   {
     "windwp/nvim-autopairs",
+    event = "InsertEnter",
     opts = {},
   },
-  { "samjwill/nvim-unception" },
+  {
+    "samjwill/nvim-unception",
+    event = "VeryLazy"
+  },
   {
     "williamboman/mason.nvim",
+    cmd = "Mason",
     opts = {},
   },
   {
     "williamboman/mason-lspconfig.nvim",
+    event = "BufReadPre",
     opts = {},
   },
 }
@@ -188,10 +254,32 @@ require("lazy").setup(plugins, {
 ---- configuration ----
 
 vim.opt.termguicolors = true
-vim.opt.background = "light"
-vim.cmd.colorscheme "base16-grayscale-light"
+vim.opt.background = "dark"
 
-local init_augroup = vim.api.nvim_create_augroup("UserConfig", { clear = true })
+local colorschemes = {
+  "base16-rose-pine-dawn",
+  "base16-shadesmear-light",
+  "base16-terracotta",
+  "base16-black-metal-burzum",
+}
+
+local current_colorscheme = 1
+vim.cmd.colorscheme(colorschemes[1])
+
+local function increment_colorscheme()
+  current_colorscheme = current_colorscheme % #colorschemes + 1
+  vim.cmd.colorscheme(colorschemes[current_colorscheme])
+end
+
+local function decrement_colorscheme()
+  current_colorscheme = (current_colorscheme - 2) % #colorschemes + 1
+  vim.cmd.colorscheme(colorschemes[current_colorscheme])
+end
+
+nmap("[C", decrement_colorscheme, "cycle colorscheme (previous)")
+nmap("]C", increment_colorscheme, "cycle colorscheme (next)")
+
+local init_augroup = vim.api.nvim_create_augroup("InitLua", { clear = true })
 
 vim.g.mapleader = " "
 
@@ -330,6 +418,27 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
   callback = function(ctx)
     local dir = vim.fn.fnamemodify(ctx.file, ":p:h")
     vim.fn.mkdir(dir, "p")
+  end,
+})
+
+vim.api.nvim_create_autocmd("BufReadPre", {
+  group = init_augroup,
+  callback = function(args)
+    local size = vim.fn.getfsize(args.file)
+    -- 1MB = 1024 * 1024
+    local max_size = 1024 * 1024
+
+    if size > max_size then
+      vim.opt_local.undofile = false
+      vim.opt_local.swapfile = false
+      vim.opt_local.backup = false
+      vim.opt_local.writebackup = false
+      vim.opt_local.eventignore:append({ "FileType", "CursorHold", "CursorHoldI", "TextChanged", "TextChangedI" })
+      vim.opt_local.bufhidden = "unload"
+      vim.opt_local.buftype = "nowrite"
+      vim.opt_local.syntax = ""
+      vim.opt_local.foldenable = false
+    end
   end,
 })
 
@@ -548,7 +657,7 @@ vim.api.nvim_create_autocmd("TermOpen", {
 local function update_tmux_env()
   if not vim.env.TMUX then return end
   for _, line in
-    pairs(vim.split(vim.fn.system { "tmux", "show-environment" }, "\n"))
+  pairs(vim.split(vim.fn.system { "tmux", "show-environment" }, "\n"))
   do
     local _, _, k, v = line:find "(.*)=(.*)"
     if k and v then vim.env[k] = v end
@@ -561,9 +670,34 @@ vim.api.nvim_create_autocmd("Signal", {
   callback = update_tmux_env,
 })
 
+
+local function trim_trailing_whitespace()
+  vim.cmd [[%s/\s\+$//e]]
+end
+
+vim.api.nvim_create_user_command("TrimWhitespace", trim_trailing_whitespace, { nargs = 0 })
+
+local auto_trim_trailing_whitespace_enable = true
+
 vim.api.nvim_create_autocmd("BufWritePre", {
-  callback = function() vim.cmd [[%s/\s\+$//e]] end,
+  callback = function()
+    if auto_trim_trailing_whitespace_enable then
+      trim_trailing_whitespace()
+    end
+  end,
 })
+
+vim.api.nvim_create_user_command(
+  "AutoTrimWhitespaceEnable",
+  function() auto_trim_trailing_whitespace_enable = true end,
+  { nargs = 0 }
+)
+
+vim.api.nvim_create_user_command(
+  "AutoTrimWhitespaceDisable",
+  function() auto_trim_trailing_whitespace_enable = false end,
+  { nargs = 0 }
+)
 
 vim.o.backup = false
 vim.o.swapfile = false
@@ -596,7 +730,7 @@ local function lsp_on_attach(client, bufnr)
   )
   nmap("K", vim.lsp.buf.hover, "LSP: hover actions", { buffer = bufnr })
   nmap("<C-c>", vim.lsp.buf.code_action, "LSP: code action", { buffer = bufnr })
-  map({"i", "n"}, "<C-s>", vim.lsp.buf.signature_help, "LSP: signature_help", { buffer = bufnr })
+  map({ "i", "n" }, "<C-s>", vim.lsp.buf.signature_help, "LSP: signature_help", { buffer = bufnr })
 
   nmap(
     "gd",
@@ -639,9 +773,9 @@ local function lsp_on_attach(client, bufnr)
   )
 
   vim.lsp.handlers["textDocument/hover"] =
-    vim.lsp.with(vim.lsp.handlers.hover, { border = border_style })
+      vim.lsp.with(vim.lsp.handlers.hover, { border = border_style })
   vim.lsp.handlers["textDocument/signatureHelp"] =
-    vim.lsp.with(vim.lsp.handlers.signature_help, { border = border_style })
+      vim.lsp.with(vim.lsp.handlers.signature_help, { border = border_style })
 
   local function fmt()
     vim.lsp.buf.format {
@@ -662,13 +796,13 @@ local function mkline(sections, opts)
     local l = table.concat(
       list_flatmap(function(section)
         return table.concat(
-        list_flatmap(function(c)
-          if type(c) == "function" then
-            return c(e)
-          end
-          return c
-        end, section),
-        opts.separator or "  "
+          list_flatmap(function(c)
+            if type(c) == "function" then
+              return c(e)
+            end
+            return c
+          end, section),
+          opts.separator or "  "
         )
       end, sections),
       "%="
@@ -741,10 +875,6 @@ vim.api.nvim_create_autocmd({ "VimEnter", "BufWinEnter" }, {
 vim.o.laststatus = 3
 
 vim.o.completeopt = "menu,menuone,noselect"
-
-require('mini.completion').setup {
-  delay = { completion = 100, info = 100, signature = 10^7 },
-}
 
 require("Comment").setup {
   toggler = {
@@ -1035,15 +1165,14 @@ require("lir").setup {
   hide_cursor = false,
 }
 
--- local lsp_capabilities = vim.lsp.protocol.make_client_capabilities()
-local cmp_capabilities = require('cmp_nvim_lsp').default_capabilities()
+local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 local lsp_config = {
   on_attach = lsp_on_attach,
   flags = {
     debounce_text_changes = 1000,
   },
-  capabilities = cmp_capabilities,
+  capabilities = lsp_capabilities,
   settings = {
     Lua = {
       diagnostics = {
@@ -1069,51 +1198,51 @@ for _, lsp in ipairs(lsp_servers) do
 end
 
 local metals_config =
-  vim.tbl_deep_extend("force", require("metals").bare_config(), {
-    on_attach = function(client, bufnr)
-      lsp_on_attach(client, bufnr)
-      nmap(
-        "<leader>ms",
-        "<cmd>MetalsGotoSuperMethod<cr>",
-        "Go to super-method",
-        { buffer = bufnr }
-      )
-      nmap(
-        "<leader>mS",
-        "<cmd>MetalsSuperMethodHierarchy<cr>",
-        "Super-method hierarchy",
-        { buffer = bufnr }
-      )
-      nmap(
-        "<leader>mb",
-        "<cmd>MetalsSwitchBsp<cr>",
-        "Switch BSP",
-        { buffer = bufnr }
-      )
-      nmap(
-        "<leader>mr",
-        "<cmd>MetalsRestartServer<cr>",
-        "Restart server",
-        { buffer = bufnr }
-      )
-      nmap(
-        "<leader>mc",
-        "<cmd>MetalsCompileCancel<cr>",
-        "Cancel compilation",
-        { buffer = bufnr }
-      )
-    end,
-    settings = {
-      superMethodLensesEnabled = false,
-    },
-    init_options = {
-      statusBarProvider = "on",
-    },
-  })
+    vim.tbl_deep_extend("force", require("metals").bare_config(), {
+      on_attach = function(client, bufnr)
+        lsp_on_attach(client, bufnr)
+        nmap(
+          "<leader>ms",
+          "<cmd>MetalsGotoSuperMethod<cr>",
+          "Go to super-method",
+          { buffer = bufnr }
+        )
+        nmap(
+          "<leader>mS",
+          "<cmd>MetalsSuperMethodHierarchy<cr>",
+          "Super-method hierarchy",
+          { buffer = bufnr }
+        )
+        nmap(
+          "<leader>mb",
+          "<cmd>MetalsSwitchBsp<cr>",
+          "Switch BSP",
+          { buffer = bufnr }
+        )
+        nmap(
+          "<leader>mr",
+          "<cmd>MetalsRestartServer<cr>",
+          "Restart server",
+          { buffer = bufnr }
+        )
+        nmap(
+          "<leader>mc",
+          "<cmd>MetalsCompileCancel<cr>",
+          "Cancel compilation",
+          { buffer = bufnr }
+        )
+      end,
+      settings = {
+        superMethodLensesEnabled = false,
+      },
+      init_options = {
+        statusBarProvider = "on",
+      },
+    })
 
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "scala", "sbt", "java" },
-  callback = with(require("metals").initialize_or_attach, { metals_config }),
+  callback = with(require("metals").initialize_or_attach, metals_config),
   group = init_augroup,
 })
 
@@ -1202,20 +1331,21 @@ nmap(
   "Open buffer"
 )
 
-local function ts_disable_large_buf(_, bufnr)
-  return vim.api.nvim_buf_line_count(bufnr)
-    > tonumber(vim.env.NVIM_TREESITTER_MAX_SIZE or 100000)
+local function buffer_has_large_file(bufnr)
+  local is_large = vim.api.nvim_buf_line_count(bufnr) > tonumber(vim.env.NVIM_TREESITTER_MAX_SIZE or 100000)
+  local is_fir_file = vim.fn.expand "%:e" == "fir"
+  return is_large or is_fir_file
 end
 
 require("nvim-treesitter.configs").setup {
   auto_install = vim.fn.executable "tree-sitter" == 1,
   highlight = {
     enable = true,
-    disable = ts_disable_large_buf,
+    disable = function(_, bufnr) return buffer_has_large_file(bufnr) end
   },
   textobjects = {
     enable = true,
-    disable = ts_disable_large_buf,
+    disable = function(_, bufnr) return buffer_has_large_file(bufnr) end,
     lookahead = true,
     select = {
       enable = true,
@@ -1234,7 +1364,7 @@ require("nvim-treesitter.configs").setup {
   },
   incremental_selection = {
     enable = true,
-    disable = ts_disable_large_buf,
+    disable = function(_, bufnr) return buffer_has_large_file(bufnr) end,
     keymaps = {
       init_selection = "gn",
       node_incremental = "<C-i>",
@@ -1248,7 +1378,7 @@ require("nvim-treesitter.configs").setup {
 
 vim.api.nvim_create_autocmd("BufRead", {
   callback = function()
-    if ts_disable_large_buf(nil, 0) then vim.cmd.TSContextDisable() end
+    if buffer_has_large_file(0) then vim.cmd.TSContextDisable() end
   end,
 })
 
@@ -1266,10 +1396,10 @@ require("ufo").setup {
 require("smart-splits").setup()
 
 for _, fmt in ipairs { "<C-w>%s", "<C-%s>" } do
-  nmap(string.format(fmt, "h"),  require("smart-splits").move_cursor_left)
-  nmap(string.format(fmt, "l"),  require("smart-splits").move_cursor_right)
-  nmap( string.format(fmt, "j"), require("smart-splits").move_cursor_down)
-  nmap(string.format(fmt, "k"),  require("smart-splits").move_cursor_up)
+  nmap(string.format(fmt, "h"), require("smart-splits").move_cursor_left)
+  nmap(string.format(fmt, "l"), require("smart-splits").move_cursor_right)
+  nmap(string.format(fmt, "j"), require("smart-splits").move_cursor_down)
+  nmap(string.format(fmt, "k"), require("smart-splits").move_cursor_up)
 end
 
 nmap("<M-h>", require("smart-splits").resize_left)
@@ -1286,5 +1416,46 @@ cmp.setup({
     ["<C-n>"] = cmp.mapping.select_next_item(),
     ["<C-p>"] = cmp.mapping.select_prev_item(),
     ["<C-e>"] = cmp.mapping.confirm({ select = true }),
-  })
+  }),
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp' },
+    { name = 'buffer' },
+    { name = 'path' },
+  }),
 })
+
+local configs = require('lspconfig.configs')
+
+local function find_wakeroot(name)
+  local dir = string.gsub(name, "/[^/]*$", "")
+  if dir == "" then
+    return ""
+  end
+  if file_exists(dir .. "/.wakeroot") or file_exists(dir .. "/wake.db") then
+    return dir
+  else
+    return find_wakeroot(dir)
+  end
+end
+
+if not configs.wakelsp then
+  configs.wakelsp = {
+    default_config = {
+      cmd = { 'wake', '--lsp' },
+      filetypes = { 'wake' },
+      root_dir = find_wakeroot,
+      settings = {},
+    },
+  }
+end
+
+require('lspconfig').wakelsp.setup {
+  capabilities = lsp_capabilities,
+  on_attach = lsp_on_attach,
+}
+
+vim.filetype.add {
+  extension = {
+    wake = 'wake',
+  }
+}
